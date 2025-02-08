@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-check_script_running() {
-    pid=`pgrep -f $0`
-    if ! [[ -z "$pid" ]]; then
-        echo "❌ Script $0 already running with pid $pid.  Please close the running script to run."
-        exit 1
-    fi
-}
-
+# check_script_running() {
+#     pid=`pgrep -f $0`
+#     if ! [[ -z "$pid" ]]; then
+#         echo "❌ Script $0 already running with pid $pid.  Please close the running script to run."
+#         exit 1
+#     fi
+# }
 
 # required
 hostname=
@@ -140,7 +139,7 @@ fatal() {
 
 shift $((OPTIND-1))
 
-check_script_running
+# check_script_running
 
 if [ -z "${hostname}" ]; then
     fatal "hostname is required"

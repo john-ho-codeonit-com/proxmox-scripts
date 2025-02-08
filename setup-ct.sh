@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-check_script_running() {
-    pid=`pgrep -f $0`
-    if ! [[ -z "$pid" ]]; then
-        echo "❌ Script $0 already running with pid $pid.  Please close the running script to run."
-        exit 1
-    fi
-}
+# check_script_running() {
+#     pid=`pgrep -f $0`
+#     if ! [[ -z "$pid" ]]; then
+#         echo "❌ Script $0 already running with pid $pid.  Please close the running script to run."
+#         exit 1
+#     fi
+# }
 
 # defaults
 user="dockeruser"
@@ -94,7 +94,7 @@ done
 
 shift $((OPTIND-1))
 
-check_script_running
+# check_script_running
 
 
 echo "user: $user"
