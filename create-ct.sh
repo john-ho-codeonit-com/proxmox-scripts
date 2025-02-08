@@ -181,8 +181,7 @@ cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 ssh root@$hostname service sshd restart
 
-# TODO:  run other script
-curl -s <setup ct github script> | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
+curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
 
 if ! [ -z "${enable_gpu_passthrough}" ]; then
     apt install radeontop -y
