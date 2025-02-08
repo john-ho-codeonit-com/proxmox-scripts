@@ -150,6 +150,8 @@ if [ -z "${vmid}" ]; then
 fi
 
 
+echo "vmid: $vmid"
+echo "template: $template"
 
 pct create $vmid $template \
   --hostname $hostname \
