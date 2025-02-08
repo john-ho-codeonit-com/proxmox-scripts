@@ -175,6 +175,8 @@ echo "template: $template"
 
 # until [[ $(pct status $vmid | awk '{print $2}') == "running" ]]; do echo "waiting for container to start"; sleep 1; done
 
+# sleep 5
+
 # ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
 # cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
