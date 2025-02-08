@@ -153,22 +153,22 @@ fi
 echo "vmid: $vmid"
 echo "template: $template"
 
-# pct create $vmid $template \
-#   --hostname $hostname \
+pct create $vmid $template \
+  --hostname $hostname \
 #   --description $description \
-#   --cores $cores \
-#   --cpulimit $cpulimit \
-#   --memory $memory \
-#   --swap $swap \
-#   --features $features \
-#   --net0 $net0 \
-#   --ostype $ostype \
-#   --password $password \
-#   --rootfs $rootfs \
-#   --storage $storage \
-#   --unprivileged 1 \
-#   --ssh-public-keys $ssh_public_keys \
-#   --start 1
+  --cores $cores \
+  --cpulimit $cpulimit \
+  --memory $memory \
+  --swap $swap \
+  --features nesting=1 \
+  --net0 name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth \
+  --ostype $ostype \
+  --password $password \
+  --rootfs $rootfs \
+  --storage $storage \
+  --unprivileged 1 \
+  --ssh-public-keys $ssh_public_keys \
+  --start 1
 
 # # TODO: check to see if vmid exists
 # sleep 5
