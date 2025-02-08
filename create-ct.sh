@@ -153,48 +153,48 @@ fi
 echo "vmid: $vmid"
 echo "template: $template"
 
-pct create $vmid $template \
-  --hostname $hostname \
-  --description $description \
-  --cores $cores \
-  --cpulimit $cpulimit \
-  --memory $memory \
-  --swap $swap \
-  --features $features \
-  --net0 $net0 \
-  --ostype $ostype \
-  --password $password \
-  --rootfs $rootfs \
-  --storage $storage \
-  --unprivileged 1 \
-  --ssh-public-keys $ssh_public_keys \
-  --start 1
+# pct create $vmid $template \
+#   --hostname $hostname \
+#   --description $description \
+#   --cores $cores \
+#   --cpulimit $cpulimit \
+#   --memory $memory \
+#   --swap $swap \
+#   --features $features \
+#   --net0 $net0 \
+#   --ostype $ostype \
+#   --password $password \
+#   --rootfs $rootfs \
+#   --storage $storage \
+#   --unprivileged 1 \
+#   --ssh-public-keys $ssh_public_keys \
+#   --start 1
 
-# TODO: check to see if vmid exists
-sleep 5
+# # TODO: check to see if vmid exists
+# sleep 5
 
-until [[ $(pct status $vmid | awk '{print $2}') == "running" ]]; do echo "waiting for container to start"; sleep 1; done
+# until [[ $(pct status $vmid | awk '{print $2}') == "running" ]]; do echo "waiting for container to start"; sleep 1; done
 
-ssh-keygen -f ~/.ssh/known_hosts -R $hostname
+# ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
-cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
+# cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
-sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
-ssh root@$hostname service sshd restart
+# sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
+# ssh root@$hostname service sshd restart
 
-curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
+# curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
 
-if ! [ -z "${enable_gpu_passthrough}" ]; then
-    apt install radeontop -y
-    pct shutdown $vmid
-    until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to start"; sleep 1; done
-    IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
-    for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
-        echo "$lxc_cgroup2_devices_allow" >> /etc/pve/lxc/$vmid
-    done
-    IFS='|' read -a lxc_mount_entry_list_array <<< "$lxc_mount_entry_list" 
-    for lxc_mount_entry in "${lxc_mount_entry_list_array[@]}"; do 
-        echo "$lxc_mount_entry" >> /etc/pve/lxc/$vmid
-    done
-    pct start $vmid
-fi
+# if ! [ -z "${enable_gpu_passthrough}" ]; then
+#     apt install radeontop -y
+#     pct shutdown $vmid
+#     until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to start"; sleep 1; done
+#     IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
+#     for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
+#         echo "$lxc_cgroup2_devices_allow" >> /etc/pve/lxc/$vmid
+#     done
+#     IFS='|' read -a lxc_mount_entry_list_array <<< "$lxc_mount_entry_list" 
+#     for lxc_mount_entry in "${lxc_mount_entry_list_array[@]}"; do 
+#         echo "$lxc_mount_entry" >> /etc/pve/lxc/$vmid
+#     done
+#     pct start $vmid
+# fi
