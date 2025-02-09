@@ -16,7 +16,6 @@ description=""
 vmid=
 memory=1024
 password="qwerty#123"
-gpu_passthrough=false
 enable_desktop=false
 enable_gpu_passthrough=false
 
@@ -149,13 +148,13 @@ if [ -z "${vmid}" ]; then
     vmid=$(pvesh get /cluster/nextid)
 fi
 
-
-echo "vmid: $vmid"
-echo "template: $template"
+if [ -z "${description}" ]; then
+    description=$hostname
+fi
 
 pct create $vmid $template \
   --hostname $hostname \
-#   --description $description \
+  --description $description \
   --cores $cores \
   --cpulimit $cpulimit \
   --memory $memory \
@@ -170,33 +169,40 @@ pct create $vmid $template \
   --ssh-public-keys $ssh_public_keys \
   --start 1
 
-# # TODO: check to see if vmid exists
-# sleep 5
+until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be created..."; sleep 1; done
+until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
+until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
 
-# until [[ $(pct status $vmid | awk '{print $2}') == "running" ]]; do echo "waiting for container to start"; sleep 1; done
+ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
-# sleep 5
+cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
-# ssh-keygen -f ~/.ssh/known_hosts -R $hostname
-
-# cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
-
-# sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
-# ssh root@$hostname service sshd restart
+sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
+ssh root@$hostname service sshd restart
 
 # curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
 
-# if ! [ -z "${enable_gpu_passthrough}" ]; then
-#     apt install radeontop -y
-#     pct shutdown $vmid
-#     until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to start"; sleep 1; done
-#     IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
-#     for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
-#         echo "$lxc_cgroup2_devices_allow" >> /etc/pve/lxc/$vmid
-#     done
-#     IFS='|' read -a lxc_mount_entry_list_array <<< "$lxc_mount_entry_list" 
-#     for lxc_mount_entry in "${lxc_mount_entry_list_array[@]}"; do 
-#         echo "$lxc_mount_entry" >> /etc/pve/lxc/$vmid
-#     done
-#     pct start $vmid
-# fi
+setup_ct_args="--user-password=$password"
+if [ "${enable_gpu_passthrough}" == "true" ]; then
+    setup_ct_args+=" --enable-desktop"
+     
+fi
+if [ "${enable_gpu_passthrough}" == "true" ]; then
+    setup_ct_args+=" --enable-desktop"
+fi
+
+./setup-ct.sh $setup_ct_args
+
+if [ "${enable_gpu_passthrough}" == "true" ]; then
+    pct shutdown $vmid
+    until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to start"; sleep 1; done
+    IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
+    for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
+        echo "lxc.cgroup2.devices.allow: $lxc_cgroup2_devices_allow" >> "/etc/pve/lxc/$vmid.conf"
+    done
+    IFS='|' read -a lxc_mount_entry_list_array <<< "$lxc_mount_entry_list" 
+    for lxc_mount_entry in "${lxc_mount_entry_list_array[@]}"; do 
+        echo "lxc.mount.entry: $lxc_mount_entry" >> "/etc/pve/lxc/$vmid.conf"
+    done
+    pct start $vmid
+fi

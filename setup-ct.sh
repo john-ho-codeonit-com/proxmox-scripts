@@ -9,9 +9,11 @@
 # }
 
 # defaults
+docker_compose_url=
 user="dockeruser"
 user_fullname="Docker User"
 user_password="qwerty#123"
+enable_gpu_passthrough=false
 enable_desktop=false
 
 usage() {
@@ -24,6 +26,8 @@ SYNOPSIS
                      [--user=<arg>]
                      [--user-fullname=<arg>]
                      [--user-password=<arg>]
+                     [--docker-compose-url=<arg]
+                     [--enable_gpu_passthrough]
                      [--enable-desktop]
 
 OPTIONS
@@ -38,6 +42,12 @@ OPTIONS
 
   --user_password=<arg>
         user password for the container user
+
+  --docker-compose-url=<arg>
+        docker compose file to run
+
+  --enable-gpu-passthrough
+        install gpu apps
 
   --enable-desktop
         add enable desktop and xrdp
@@ -74,16 +84,20 @@ while getopts "$optspec" optchar; do
     case "$optchar" in
         h) usage; exit 0 ;;
         enable-desktop) enable_desktop=true ;;
+        enable-gpu-passthrough) enable_gpu_passthrough=true ;;
         -) # long option processing
             case "$OPTARG" in
                 help) usage; exit 0 ;;
                 enable-desktop) enable_desktop=true ;;
+                enable-gpu-passthrough) enable_gpu_passthrough=true ;;
                 user|user=*) next_arg
                     user="$OPTARG" ;;
                 user-fullname|user-fullname=*) next_arg
                     user_fullname="$OPTARG" ;;
                 user-password|user-password=*) next_arg
                     user_password="$OPTARG" ;;
+                docker-compose-url|docker-compose-url=*) next_arg
+                    docker_compose_url="$OPTARG" ;;
                 -) break ;;
                 *) fatal "Unknown option '--${OPTARG}'" "see '${0} --help' for usage" ;;
             esac
@@ -96,15 +110,12 @@ shift $((OPTIND-1))
 
 # check_script_running
 
-
-echo "user: $user"
-echo "user_fullname: $user_fullname"
-echo "user_password: $user_password"
-echo "enable_desktop: $enable_desktop"
-
 # update
 apt update
 apt upgrade -y
+
+# install apps
+apt install git -y
 
 # install docker
 apt-get install ca-certificates curl -y
@@ -128,10 +139,14 @@ curl https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --out
 apt install sudo -y
 adduser $user --gecos "$user_fullname,,," --disabled-password
 echo "$user:$user_password" | chpasswd
-usermod -aG sudo $users
+usermod -aG sudo $user
 usermod -aG docker $user
 
-if [[ "$enable_desktop" == true ]]; then
+if [ "${enable_gpu_passthrough}" == "true" ]; then
+    apt install radeontop -y
+fi
+
+if [ "$enable_desktop" == true ]; then
     apt install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
     apt install xrdp -y
     adduser xrdp ssl-cert
@@ -146,4 +161,6 @@ mkdir -p /home/$user/.ssh
 cp /root/.ssh/authorized_keys /home/$user/.ssh
 chown -R john:john /home/$user/.ssh
 
-apt install git -y
+if [ -z $"$docker_compose_url" ]; then
+    curl  --create-dirs -O --output-dir /opt/stacks/default "$docker_compose_url"
+fi
