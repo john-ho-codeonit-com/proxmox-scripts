@@ -16,6 +16,7 @@ description=""
 vmid=
 memory=1024
 password="qwerty#123"
+docker_compose_url=
 enable_desktop=false
 enable_gpu_passthrough=false
 
@@ -46,6 +47,7 @@ SYNOPSIS
                      [--vmid=<arg>]
                      [--memory=<arg>]
                      [--password=<arg>]
+                     [--docker-compose-url=<arg]
                      [--enable-gpu-passthrough]
                      [--enable-desktop]
 
@@ -67,7 +69,10 @@ OPTIONS
 
   --password=<arg>
         password for container root user, will be qwerty#123 if not specified
- 
+
+  --docker-compose-url=<arg>
+        docker compose file to run
+
   --enable-gpu-passthrough
         enables gpu passthrough if specified
 
@@ -121,6 +126,8 @@ while getopts "$optspec" optchar; do
                     memory="$OPTARG" ;;
                 password|password=*) next_arg
                     password="$OPTARG" ;;
+                docker-compose-url|docker-compose-url=*) next_arg
+                    docker_compose_url="$OPTARG" ;;
                 -) break ;;
                 *) fatal "Unknown option '--${OPTARG}'" "see '${0} --help' for usage" ;;
             esac
@@ -184,11 +191,13 @@ ssh root@$hostname service sshd restart
 
 setup_ct_args="--user-password=$password"
 if [ "${enable_gpu_passthrough}" == "true" ]; then
-    setup_ct_args+=" --enable-desktop"
-     
+    setup_ct_args+=" --enable-desktop"   
 fi
 if [ "${enable_gpu_passthrough}" == "true" ]; then
     setup_ct_args+=" --enable-desktop"
+fi
+if [ -n "${docker_compose_url}" ]; then
+    setup_ct_args+=" --docker-compose-url=$docker_compose_url"
 fi
 
 ./setup-ct.sh $setup_ct_args

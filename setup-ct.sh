@@ -108,6 +108,8 @@ done
 
 shift $((OPTIND-1))
 
+echo "docker-compose-url: $docker_compose_url"
+
 # check_script_running
 
 # update
@@ -161,6 +163,7 @@ mkdir -p /home/$user/.ssh
 cp /root/.ssh/authorized_keys /home/$user/.ssh
 chown -R john:john /home/$user/.ssh
 
-if [ -z $"$docker_compose_url" ]; then
-    curl  --create-dirs -O --output-dir /opt/stacks/default "$docker_compose_url"
+if [ -n $"$docker_compose_url" ]; then
+    curl --create-dirs -O --output-dir /opt/stacks/default "$docker_compose_url"
+    (cd /opt/stacks/default/ &&  su - $user -c "docker compose up -d")
 fi
