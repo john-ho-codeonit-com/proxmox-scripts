@@ -217,9 +217,4 @@ if [ -n "${docker_compose_url}" ]; then
     setup_ct_args+=" --docker-compose-url='$docker_compose_url'"
 fi
 
-# ssh root@test 'bash -s --' < ./setup-ct.sh $setup_ct_args
-curl https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh --output setup-ct.sh
-chmod +x setup-ct.sh
-ssh root@test 'bash -s --' < ./setup-ct.sh $setup_ct_args
-# curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- $setup_ct_args'
-# ssh root@$hostname | 'set -s pipefail ; curl -fsS https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | bash -s -- $setup_ct_args'
+curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname bash -s -- $setup_ct_args
