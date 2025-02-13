@@ -9,7 +9,7 @@
 # }
 
 # defaults
-docker_compose_url=
+docker_compose_url=""
 user="dockeruser"
 user_fullname="Docker User"
 user_password="qwerty#123"
@@ -108,18 +108,16 @@ done
 
 shift $((OPTIND-1))
 
-echo "docker-compose-url: $docker_compose_url"
-
 # check_script_running
 
-# update
-apt update
-apt upgrade -y
+echo "Upgrading system..."
+apt-get update
+apt-get upgrade -y
 
-# install apps
-apt install git -y
+echo "Installing essential packages..."
+apt-get install git -y
 
-# install docker
+echo "Install docker..."
 apt-get install ca-certificates curl -y
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
@@ -133,37 +131,41 @@ echo \
 apt-get update
 apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-# install dockage
-mkdir -p /opt/stacks /opt/dockge
-(cd /opt/dockge && # Download the compose.yaml
-curl https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --output compose.yaml && docker compose up -d)
-
-apt install sudo -y
+echo "Creating user $user..."
+apt-get install sudo -y
 adduser $user --gecos "$user_fullname,,," --disabled-password
 echo "$user:$user_password" | chpasswd
 usermod -aG sudo $user
 usermod -aG docker $user
 
+echo "Setting up ssh keys for user $user..."
+mkdir -p /home/$user/.ssh
+cp /root/.ssh/authorized_keys /home/$user/.ssh
+chown -R $user:$user /home/$user/.ssh
+
+echo "Installing dockge..."
+mkdir -p /opt/stacks /opt/dockge
+(cd /opt/dockge && curl https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --output compose.yaml && docker compose up -d)
+
+if [ -n "${docker_compose_url}" ]; then
+    echo "Installing and running docker compose app..."
+    mkdir -p /opt/stacks/default
+    (cd /opt/stacks/default && curl $docker_compose_url --output compose.yaml && docker compose up -d)
+fi
+
 if [ "${enable_gpu_passthrough}" == "true" ]; then
-    apt install radeontop -y
+    echo "Installing gpu packages..."
+    apt-get install radeontop -y
 fi
 
 if [ "$enable_desktop" == true ]; then
-    apt install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
-    apt install xrdp -y
+    echo "Installing desktop packages and setting up desktop..."
+    apt-get install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
+    apt-get install xrdp -y
     adduser xrdp ssl-cert
     systemctl restart xrdp
     usermod -aG video $user
     usermod -aG render $user
     usermod -aG audio $user
     usermod -aG input $user
-fi
-
-mkdir -p /home/$user/.ssh
-cp /root/.ssh/authorized_keys /home/$user/.ssh
-chown -R john:john /home/$user/.ssh
-
-if [ -n $"$docker_compose_url" ]; then
-    curl --create-dirs -O --output-dir /opt/stacks/default "$docker_compose_url"
-    (cd /opt/stacks/default/ &&  su - $user -c "docker compose up -d")
 fi

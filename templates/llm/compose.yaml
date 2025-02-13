@@ -1,0 +1,45 @@
+services:
+  ollama:
+    restart: always
+    image: ollama/ollama:rocm
+    container_name: ollama
+    environment:
+      OLLAMA_MODELS: /usr/share/ollama
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    ipc: host
+    group_add:
+      - video
+    volumes:
+      - /home/username/.ollama:/root/.ollama
+      - /home/username/ollama/models:/usr/share/ollama
+    ports:
+      - 11434:11434
+  open-webui:
+    restart: always
+    image: ghcr.io/open-webui/open-webui:cuda
+    container_name: open-webui
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      HSA_OVERRIDE_GFX_VERSION: 11.0.0
+      HIP_VISIBLE_DEVICES: "0"
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    ipc: host
+    group_add:
+      - video
+    volumes:
+      - /home/username/.open-webui:/app/backend/data
+    ports:
+      - 3000:8080
+networks: {}

@@ -111,6 +111,7 @@ while getopts "$optspec" optchar; do
     case "$optchar" in
         h) usage; exit 0 ;;
         enable-desktop) enable_desktop=true ;;
+        enable-gpu-passthrough) enable_gpu_passthrough=true ;;
         -) # long option processing
             case "$OPTARG" in
                 help) usage; exit 0 ;;
@@ -159,6 +160,7 @@ if [ -z "${description}" ]; then
     description=$hostname
 fi
 
+echo "Creating container..."
 pct create $vmid $template \
   --hostname $hostname \
   --description $description \
@@ -180,6 +182,7 @@ until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be cre
 until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
 
+echo "Setting up ssh keys..."
 ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
 cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
@@ -187,24 +190,10 @@ cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 ssh root@$hostname service sshd restart
 
-# curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
-
-setup_ct_args="--user-password=$password"
 if [ "${enable_gpu_passthrough}" == "true" ]; then
-    setup_ct_args+=" --enable-desktop"   
-fi
-if [ "${enable_gpu_passthrough}" == "true" ]; then
-    setup_ct_args+=" --enable-desktop"
-fi
-if [ -n "${docker_compose_url}" ]; then
-    setup_ct_args+=" --docker-compose-url=$docker_compose_url"
-fi
-
-./setup-ct.sh $setup_ct_args
-
-if [ "${enable_gpu_passthrough}" == "true" ]; then
+    echo "Setting up gpu passthrough..."
     pct shutdown $vmid
-    until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to start"; sleep 1; done
+    until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to stop"; sleep 1; done
     IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
     for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
         echo "lxc.cgroup2.devices.allow: $lxc_cgroup2_devices_allow" >> "/etc/pve/lxc/$vmid.conf"
@@ -214,4 +203,18 @@ if [ "${enable_gpu_passthrough}" == "true" ]; then
         echo "lxc.mount.entry: $lxc_mount_entry" >> "/etc/pve/lxc/$vmid.conf"
     done
     pct start $vmid
+    until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 fi
+
+setup_ct_args="--user-password=$password"
+if [ "${enable_gpu_passthrough}" == "true" ]; then
+    setup_ct_args+=" --enable-desktop"   
+fi
+if [ "${enable_gpu_passthrough}" == "true" ]; then
+    setup_ct_args+=" --enable-gpu-passthrough"
+fi
+if [ -n "${docker_compose_url}" ]; then
+    setup_ct_args+=" --docker-compose-url='$docker_compose_url'"
+fi
+ssh root@test 'bash -s --' < ./setup-ct.sh $setup_ct_args
+# # curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh | ssh root@$hostname 'bash -s -- --user_password=$password --enable-desktop=$enable_desktop'
