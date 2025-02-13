@@ -219,4 +219,4 @@ fi
 
 (curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s)| ssh root@$hostname bash -s -- $setup_ct_args) &
 
-wait
+wait -n
