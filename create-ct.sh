@@ -23,7 +23,7 @@ enable_gpu_passthrough=false
 # non-configurable
 ct_ssh_public_keys="/home/john/.ssh/pve-ct_id_ed25519.pub"
 ostype="debian"
-rootfs="volume=vm:4"
+rootfs="volume=vm:15"
 storage="vm"
 lxc_cgroup2_devices_allow_list="c 226:0 rwm|c 226:128 rwm|c 234:* rwm"
 lxc_mount_entry_list="/dev/dri dev/dri none bind,optional,create=dir|/dev/dri/renderD128 dev/renderD128 none bind,optional,create=file|/dev/kfd dev/kfd none bind,optional,create=file"
