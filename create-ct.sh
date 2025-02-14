@@ -192,9 +192,9 @@ ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
-ssh root@$hostname service sshd restart &
-wait -n
-sleep 5
+# ssh root@$hostname service sshd restart &
+# wait -n
+# sleep 5
 
 echo "continue"
 
