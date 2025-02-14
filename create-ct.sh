@@ -192,6 +192,8 @@ cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 ssh root@$hostname service sshd restart
 
+echo "continue"
+
 if [ "${enable_gpu_passthrough}" == "true" ]; then
     echo "Setting up gpu passthrough..."
     pct shutdown $vmid
