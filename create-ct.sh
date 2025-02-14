@@ -8,6 +8,8 @@
 #     fi
 # }
 
+set -x
+
 # required
 hostname=
 
