@@ -192,11 +192,6 @@ ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
-# ssh root@$hostname service sshd restart &
-# wait -n
-# sleep 5
-
-echo "continue"
 
 if [ "${enable_gpu_passthrough}" == "true" ]; then
     echo "Setting up gpu passthrough..."
@@ -225,10 +220,12 @@ if [ -n "${docker_compose_url}" ]; then
     setup_ct_args+=" --docker-compose-url='$docker_compose_url'"
 fi
 
-curl https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s) --output /tmp/setup-ct.sh
-chmod +x /tmp/setup-ct.sh
- ssh root@$hostname 'bash -s --' < /tmp/setup-ct.sh $setup_ct_args
+# curl https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s) --output /tmp/setup-ct.sh
+# chmod +x /tmp/setup-ct.sh
+#  ssh root@$hostname 'bash -s --' < /tmp/setup-ct.sh $setup_ct_args
 
 # (curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s)| ssh root@$hostname bash -s -- $setup_ct_args) &
-
 # wait -n
+
+curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s)| ssh root@$hostname bash -s -- $setup_ct_args
+ssh root@$hostname service sshd restart &
