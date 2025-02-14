@@ -184,7 +184,7 @@ until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be cre
 until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
 
-echo "xxxxxx"
+echo "vvvvvvv"
 
 echo "Setting up ssh keys..."
 ssh-keygen -f ~/.ssh/known_hosts -R $hostname
@@ -192,7 +192,9 @@ ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
-ssh root@$hostname service sshd restart
+ssh root@$hostname service sshd restart &
+wait -n
+sleep 5
 
 echo "continue"
 
