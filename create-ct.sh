@@ -217,6 +217,10 @@ if [ -n "${docker_compose_url}" ]; then
     setup_ct_args+=" --docker-compose-url='$docker_compose_url'"
 fi
 
-(curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s)| ssh root@$hostname bash -s -- $setup_ct_args) &
+curl https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s) --output /tmp/setup-ct.sh
+chmod +x /tmp/setup-ct.sh
+ ssh root@$hostname 'bash -s --' < /tmp/setup-ct.sh $setup_ct_args
 
-wait -n
+# (curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s)| ssh root@$hostname bash -s -- $setup_ct_args) &
+
+# wait -n
