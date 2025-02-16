@@ -19,11 +19,12 @@ password="qwerty#123"
 docker_compose_url=
 enable_desktop=false
 enable_gpu_passthrough=false
+rootfs_volume_size=15
 
 # non-configurable
 ct_ssh_public_keys="/home/john/.ssh/pve-ct_id_ed25519.pub"
 ostype="debian"
-rootfs="volume=vm:15"
+rootfs_volume="volume=vm"
 storage="vm"
 lxc_cgroup2_devices_allow_list="c 226:0 rwm|c 226:128 rwm|c 234:* rwm"
 lxc_mount_entry_list="/dev/dri dev/dri none bind,optional,create=dir|/dev/dri/renderD128 dev/renderD128 none bind,optional,create=file|/dev/kfd dev/kfd none bind,optional,create=file"
@@ -34,6 +35,7 @@ net0="name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth"
 features="nesting=1"
 ssh_public_keys="/root/.ssh/authorized_keys"
 template="vm:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
+net0="name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth"
 
 usage() {
   cat - >&2 <<EOF
@@ -46,6 +48,7 @@ SYNOPSIS
                      [--description=<arg>]
                      [--vmid=<arg>]
                      [--memory=<arg>]
+                     [--size=<arg>]
                      [--password=<arg>]
                      [--docker-compose-url=<arg]
                      [--enable-gpu-passthrough]
@@ -66,6 +69,9 @@ OPTIONS
   
   --memory=<arg>
         memory for container in MB, will be 1024MB if not specified
+
+ --size=<arg>
+        storage size for container in GB, will be 15GB if not specified
 
   --password=<arg>
         password for container root user, will be qwerty#123 if not specified
@@ -125,6 +131,8 @@ while getopts "$optspec" optchar; do
                     vmid="$OPTARG" ;;
                 memory|memory=*) next_arg
                     memory="$OPTARG" ;;
+                size|size=*) next_arg
+                    rootfs_volume_size="$OPTARG" ;;
                 password|password=*) next_arg
                     password="$OPTARG" ;;
                 docker-compose-url|docker-compose-url=*) next_arg
@@ -168,11 +176,11 @@ pct create $vmid $template \
   --cpulimit $cpulimit \
   --memory $memory \
   --swap $swap \
-  --features nesting=1 \
-  --net0 name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth \
+  --features $features \
+  --net0 $net0 \
   --ostype $ostype \
   --password $password \
-  --rootfs $rootfs \
+  --rootfs "$rootfs_volume:$rootfs_volume_size" \
   --storage $storage \
   --unprivileged 1 \
   --ssh-public-keys $ssh_public_keys \
