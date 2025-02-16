@@ -152,7 +152,7 @@ chown -R $user:$user /home/$user/.ssh
 
 echo "Installing dockge..."
 mkdir -p /opt/stacks /opt/dockge
-(cd /opt/dockge && curl https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --output compose.yaml && docker compose up -d)
+(cd /opt/dockge && curl "https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml" --output compose.yaml && docker compose up -d)
 
 if [ -n "${docker_compose_url}" ]; then
     echo "Installing and running docker compose app..."

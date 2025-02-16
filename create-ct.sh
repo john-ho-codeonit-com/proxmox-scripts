@@ -237,7 +237,7 @@ fi
 curl -H "Cache-Control: no-cache, no-store, must-revalidate" \
      -H "Pragma: no-cache" \
      -H "Expires: 0" \ 
-     -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh \
+     -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh" \
      | ssh root@$hostname bash -s -- $setup_ct_args
 
 ssh root@$hostname service sshd restart
