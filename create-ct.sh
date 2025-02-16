@@ -19,7 +19,7 @@ password="qwerty#123"
 docker_compose_url=
 enable_desktop=false
 enable_gpu_passthrough=false
-rootfs_volume_size=15
+rootfs_volume_size=4
 
 # non-configurable
 ct_ssh_public_keys="/home/john/.ssh/pve-ct_id_ed25519.pub"
