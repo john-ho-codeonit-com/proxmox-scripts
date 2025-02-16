@@ -70,7 +70,7 @@ OPTIONS
   --memory=<arg>
         memory for container in MB, will be 1024MB if not specified
 
- --size=<arg>
+  --size=<arg>
         storage size for container in GB, will be 15GB if not specified
 
   --password=<arg>
