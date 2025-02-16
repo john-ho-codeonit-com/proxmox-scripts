@@ -17,6 +17,7 @@ vmid=
 memory=1024
 password="qwerty#123"
 docker_compose_url=
+post_install_script_url=
 enable_desktop=false
 enable_gpu_passthrough=false
 rootfs_volume_size=4
@@ -50,7 +51,8 @@ SYNOPSIS
                      [--memory=<arg>]
                      [--size=<arg>]
                      [--password=<arg>]
-                     [--docker-compose-url=<arg]
+                     [--docker-compose-url=<arg>]
+                     [--post-install-script-url=<arg>]
                      [--enable-gpu-passthrough]
                      [--enable-desktop]
 
@@ -78,6 +80,9 @@ OPTIONS
 
   --docker-compose-url=<arg>
         docker compose file to run
+
+ --post-install-script-url=<arg>
+        post install script to run
 
   --enable-gpu-passthrough
         enables gpu passthrough if specified
@@ -137,6 +142,8 @@ while getopts "$optspec" optchar; do
                     password="$OPTARG" ;;
                 docker-compose-url|docker-compose-url=*) next_arg
                     docker_compose_url="$OPTARG" ;;
+                post-install-script-url|post-install-script-url=*) next_arg
+                    post_install_script_url="$OPTARG" ;;
                 -) break ;;
                 *) fatal "Unknown option '--${OPTARG}'" "see '${0} --help' for usage" ;;
             esac
@@ -223,6 +230,14 @@ fi
 if [ -n "${docker_compose_url}" ]; then
     setup_ct_args+=" --docker-compose-url='$docker_compose_url'"
 fi
+if [ -n "${post_install_script_url}" ]; then
+    setup_ct_args+=" --post-install-script-url='$post_install_script_url'"
+fi
 
-curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh?$(date +%s)| ssh root@$hostname bash -s -- $setup_ct_args
+curl -H "Cache-Control: no-cache, no-store, must-revalidate" \
+     -H "Pragma: no-cache" \
+     -H "Expires: 0" \ 
+     -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh \
+     | ssh root@$hostname bash -s -- $setup_ct_args
+
 ssh root@$hostname service sshd restart

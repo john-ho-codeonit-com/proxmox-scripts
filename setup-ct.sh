@@ -9,7 +9,8 @@
 # }
 
 # defaults
-docker_compose_url=""
+docker_compose_url=
+post_install_script_url=
 user="dockeruser"
 user_fullname="Docker User"
 user_password="qwerty#123"
@@ -27,6 +28,7 @@ SYNOPSIS
                      [--user-fullname=<arg>]
                      [--user-password=<arg>]
                      [--docker-compose-url=<arg]
+                     [--post-install-script-url=<arg>]
                      [--enable_gpu_passthrough]
                      [--enable-desktop]
 
@@ -45,6 +47,9 @@ OPTIONS
 
   --docker-compose-url=<arg>
         docker compose file to run
+
+  --post-install-script-url=<arg>
+        post install script to run
 
   --enable-gpu-passthrough
         install gpu apps
@@ -98,6 +103,8 @@ while getopts "$optspec" optchar; do
                     user_password="$OPTARG" ;;
                 docker-compose-url|docker-compose-url=*) next_arg
                     docker_compose_url="$OPTARG" ;;
+                post-install-script-url|post-install-script-url=*) next_arg
+                    post_install_script_url="$OPTARG" ;;
                 -) break ;;
                 *) fatal "Unknown option '--${OPTARG}'" "see '${0} --help' for usage" ;;
             esac
@@ -153,12 +160,21 @@ if [ -n "${docker_compose_url}" ]; then
     (cd /opt/stacks/default && curl $docker_compose_url --output compose.yaml && docker compose up -d)
 fi
 
+if [ -n "${post_install_script_url}" ]; then
+    echo "Running post install script..."
+    curl -H "Cache-Control: no-cache, no-store, must-revalidate" \
+         -H "Pragma: no-cache" \
+         -H "Expires: 0" \
+         -s "$post_install_script_url" \
+         | bash
+fi
+
 if [ "${enable_gpu_passthrough}" == "true" ]; then
     echo "Installing gpu packages..."
     apt-get install radeontop -y
 fi
 
-if [ "$enable_desktop" == true ]; then
+if [ "$enable_desktop" == "true" ]; then
     echo "Installing desktop packages and setting up desktop..."
     apt-get install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
     apt-get install xrdp -y
