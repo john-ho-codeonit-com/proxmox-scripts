@@ -234,6 +234,8 @@ if [ -n "${post_install_script_url}" ]; then
     setup_ct_args+=" --post-install-script-url='$post_install_script_url'"
 fi
 
+echo "setup_ct_args: $setup_ct_args"
+
 curl -H "Cache-Control: no-cache, no-store, must-revalidate" \
      -H "Pragma: no-cache" \
      -H "Expires: 0" \
