@@ -20,12 +20,13 @@ docker_compose_url=
 post_install_script_url=
 enable_desktop=false
 enable_gpu_passthrough=false
-rootfs_volume_size=4
+size=4
+volume="Containers"
+isos_volume=ISOs
 
 # non-configurable
 ct_ssh_public_keys="/home/john/.ssh/pve-ct_id_ed25519.pub"
 ostype="debian"
-rootfs_volume="volume=vm"
 storage="vm"
 lxc_cgroup2_devices_allow_list="c 226:0 rwm|c 226:128 rwm|c 234:* rwm"
 lxc_mount_entry_list="/dev/dri dev/dri none bind,optional,create=dir|/dev/dri/renderD128 dev/renderD128 none bind,optional,create=file|/dev/kfd dev/kfd none bind,optional,create=file"
@@ -35,8 +36,8 @@ swap=0
 net0="name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth"
 features="nesting=1"
 ssh_public_keys="/root/.ssh/authorized_keys"
-template="vm:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
 net0="name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth"
+
 
 usage() {
   cat - >&2 <<EOF
@@ -74,6 +75,12 @@ OPTIONS
 
   --size=<arg>
         storage size for container in GB, will be 15GB if not specified
+
+  --volume=<arg>
+        rootfs volume to be used, will be Containers if not specified
+
+  --isos-volume=<arg>
+        ISOs volume to be used for the template, will be ISOs if not specified
 
   --password=<arg>
         password for container root user, will be qwerty#123 if not specified
@@ -137,7 +144,11 @@ while getopts "$optspec" optchar; do
                 memory|memory=*) next_arg
                     memory="$OPTARG" ;;
                 size|size=*) next_arg
-                    rootfs_volume_size="$OPTARG" ;;
+                    size="$OPTARG" ;;
+                volume|volume=*) next_arg
+                    volume="$OPTARG" ;;
+                isos-volume|isos-volume=*) next_arg
+                    isos_volume="$OPTARG" ;;
                 password|password=*) next_arg
                     password="$OPTARG" ;;
                 docker-compose-url|docker-compose-url=*) next_arg
@@ -175,6 +186,8 @@ if [ -z "${description}" ]; then
     description=$hostname
 fi
 
+template="$isos_volume:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
+
 echo "Creating container..."
 pct create $vmid $template \
   --hostname $hostname \
@@ -187,7 +200,7 @@ pct create $vmid $template \
   --net0 $net0 \
   --ostype $ostype \
   --password $password \
-  --rootfs "$rootfs_volume:$rootfs_volume_size" \
+  --rootfs "volume=$volume:$size" \
   --storage $storage \
   --unprivileged 1 \
   --ssh-public-keys $ssh_public_keys \
