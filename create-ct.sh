@@ -23,9 +23,10 @@ enable_gpu_passthrough=false
 size=4
 volume="Containers"
 isos_volume=ISOs
+ssh_public_key=
 
 # non-configurable
-ct_ssh_public_keys="/home/john/.ssh/pve-ct_id_ed25519.pub"
+
 ostype="debian"
 storage="vm"
 lxc_cgroup2_devices_allow_list="c 226:0 rwm|c 226:128 rwm|c 234:* rwm"
@@ -47,6 +48,7 @@ NAME
 SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
                      --hostname=<arg>
+                     --ssh-public-key
                      [--description=<arg>]
                      [--vmid=<arg>]
                      [--memory=<arg>]
@@ -62,7 +64,10 @@ OPTIONS
           Prints this and exits
 
   --hostname=<arg>
-        hostname for container
+        hostname for container, required
+  
+  --ssh-public-key=<arg>
+        ssh authorized key, required
  
   --description=<arg>
         description for container
@@ -137,6 +142,8 @@ while getopts "$optspec" optchar; do
                 enable-gpu-passthrough) enable_gpu_passthrough=true ;;
                 hostname|hostname=*) next_arg
                     hostname="$OPTARG" ;;
+                ssh-public-key|ssh-public-key=*) next_arg
+                    ssh_public_key="$OPTARG" ;;
                 description|description=*) next_arg
                     description="$OPTARG" ;;
                 vmid|vmid=*) next_arg
@@ -178,6 +185,10 @@ if [ -z "${hostname}" ]; then
     fatal "hostname is required"
 fi
 
+if [ -z "${ssh_public_key}" ]; then
+    fatal "ssh_public_key is required"
+fi
+
 if [ -z "${vmid}" ]; then
     vmid=$(pvesh get /cluster/nextid)
 fi
@@ -213,7 +224,7 @@ until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for
 echo "Setting up ssh keys..."
 ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
-cat $ct_ssh_public_keys | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
+echo "$ssh_public_key" | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 
