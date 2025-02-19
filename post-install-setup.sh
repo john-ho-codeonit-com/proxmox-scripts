@@ -1,5 +1,3 @@
-bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"
-
 curl --create-dirs -O --output-dir /usr/local/sbin https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/pve-shutdown
 chmod 777 /usr/local/sbin/pve-shutdown
 echo "0 1 * * * root /usr/local/sbin/pve-shutdown" > /etc/cron.d/pve-shutdown
