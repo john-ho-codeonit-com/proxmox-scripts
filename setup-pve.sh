@@ -10,7 +10,7 @@ ssh -t root@x79pve 'bash -c "$(wget -qLO - https://github.com/community-scripts/
 sleep 20
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for reboot to complete..."; sleep 1; done
 
-curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh" \
+curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/post-install-setup.sh" \
      | ssh root@$hostname bash -s
 
 echo run other stuff
