@@ -11,6 +11,6 @@ sleep 20
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for reboot to complete..."; sleep 1; done
 
 curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/setup-ct.sh" \
-     | ssh root@$hostname bash -s -- $setup_ct_args
+     | ssh root@$hostname bash -s
 
 echo run other stuff
