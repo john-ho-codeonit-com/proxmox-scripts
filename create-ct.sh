@@ -17,6 +17,7 @@ vmid=
 memory=1024
 password="qwerty#123"
 docker_compose_url=
+docker_compose_env={}
 post_install_script_url=
 enable_desktop=false
 enable_gpu_passthrough=false

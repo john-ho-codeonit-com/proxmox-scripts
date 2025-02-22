@@ -1,9 +1,0 @@
-services:
-  namecheap-ddns:
-    container_name: namecheap-ddns
-    image: linuxshots/namecheap-ddns
-    restart: unless-stopped
-    environment:
-      NC_HOST: "@"  # For updating the main domain; for subdomain, specify its name
-      NC_DOMAIN: "example.com"
-      NC_PASS: "DynamicDDNSPa2w0rd"

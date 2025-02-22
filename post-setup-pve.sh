@@ -1,6 +1,28 @@
 echo "Install packages..."
 apt-get install sudo -y
 
+email=john.ho@codeonit.com
+domain=proxmoxx79.codeonit.com
+
+# create function
+echo "Setting up SSL..."
+echo "Setting up SSL for staging..."
+pvenode acme account register Staging $email
+
+echo "Configure the DNS validation plugin..."
+echo 'NameCheap_Token=12345678-abcd-1234-5678-1234567890ab' > ~/api_data
+pvenode acme plugin add dns namecheap-challenge --api namecheap --data ~/api_data
+pvenode config set --acmedomain0 $domain,plugin=namecheap-challenge
+pvenode config set --acme account=staging
+pvenode acme cert order
+echo "" | openssl s_client -connect $domain:8006 2> /dev/null | sed -n -e '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/ p' | openssl x509 -noout -issuer -subject -dates -in -
+
+echo "Setting up SSL for production..."
+pvenode acme account register Production $email
+pvenode config set --acme account=production
+pvenode acme cert order
+echo "" | openssl s_client -connect $domain:8006 2> /dev/null | sed -n -e '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/ p' | openssl x509 -noout -issuer -subject -dates -in -
+
 echo "Setting up TFA for root..."
 ROOT_OATHKEYID=$(oathkeygen) && echo -e OATH key ID for root: $OATHKEYID && qrencode -t ANSIUTF8 -o - $(echo "otpauth://totp/PVE:root@"$(hostname --fqdn)"?secret=$OATHKEYID")
 pveum user modify root@pam --keys $ROOT_OATHKEYID

@@ -8,8 +8,11 @@
 #     fi
 # }
 
+# TODO:  add environment variables for container
+
 # defaults
 docker_compose_url=
+docker_compose_env={}
 post_install_script_url=
 user="dockeruser"
 user_fullname="Docker User"
@@ -122,7 +125,7 @@ apt-get update
 apt-get upgrade -y
 
 echo "Installing essential packages..."
-apt-get install git -y
+apt-get install git jq -y
 
 echo "Install docker..."
 apt-get install ca-certificates curl -y
