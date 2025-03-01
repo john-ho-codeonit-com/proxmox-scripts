@@ -179,11 +179,11 @@ if [ -z "$package_url" ]; then
     fatal "package-url is required"
 fi
 
-if [ "$package_env" ]; then
-    if ! jq -e . >/dev/null 2>&1 <<<"$package_env"; then
-        fatal "package-env json string is invalid"
-    fi
-fi
+# if [ "$package_env" ]; then
+#     if ! jq -e . >/dev/null 2>&1 <<<"$package_env"; then
+#         fatal "package-env json string is invalid"
+#     fi
+# fi
 
 if [ -z "$vmid" ]; then
     vmid=$(pvesh get /cluster/nextid)
