@@ -180,8 +180,7 @@ if [ -z "$package_url" ]; then
 fi
 
 if [ "$package_env" ]; then
-    json_val=$(jq -re '""' <<<"$package_env" 2>&1)
-    if [ "${json_val}" ]; then
+    if ! jq -e . >/dev/null 2>&1 <<<"$package_env"; then
         fatal "package-env json string is invalid"
     fi
 fi
