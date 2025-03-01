@@ -117,73 +117,71 @@ if [ "$package_env" ]; then
 fi
 
 echo "Upgrading system..."
-# apt-get update
-# apt-get upgrade -y
+apt-get update
+apt-get upgrade -y
 
 echo "Installing essential packages..."
-# apt-get install git jq -y
+apt-get install git jq -y
 
 echo "Install docker..."
-# apt-get install ca-certificates curl -y
-# install -m 0755 -d /etc/apt/keyrings
-# curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-# chmod a+r /etc/apt/keyrings/docker.asc
-
-# add the repository to Apt sources
-# echo \
-#   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-#   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-#   tee /etc/apt/sources.list.d/docker.list > /dev/null
-# apt-get update
-# apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+apt-get install ca-certificates curl -y
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
 echo "Creating user $user..."
-# apt-get install sudo -y
-# adduser $user --gecos "$user_fullname,,," --disabled-password
-# echo "$user:$user_password" | chpasswd
-# usermod -aG sudo $user
-# usermod -aG docker $user
+apt-get install sudo -y
+adduser $user --gecos "$user_fullname,,," --disabled-password
+echo "$user:$user_password" | chpasswd
+usermod -aG sudo $user
+usermod -aG docker $user
 
 echo "Setting up ssh keys for user $user..."
-# mkdir -p /home/$user/.ssh
-# cp /root/.ssh/authorized_keys /home/$user/.ssh
-# chown -R $user:$user /home/$user/.ssh
+mkdir -p /home/$user/.ssh
+cp /root/.ssh/authorized_keys /home/$user/.ssh
+chown -R $user:$user /home/$user/.ssh
 
 echo "Installing dockge..."
-# mkdir -p /opt/stacks /opt/dockge
-# (cd /opt/dockge && curl "https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml" --output compose.yaml && docker compose up -d)
+mkdir -p /opt/stacks /opt/dockge
+(cd /opt/dockge && curl "https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml" --output compose.yaml && docker compose up -d)
 
 echo "Getting package..."
 source /dev/stdin <<< $(curl -s $package_url/default.env)
 
 echo "Installing and running docker compose app..."
-# mkdir -p /opt/stacks/default
-# chmod 777 /opt/stacks/default
-# (cd /opt/stacks/default && touch default.env)
-# if curl -sfILo/dev/null "$package_url/default.env"; then
-#     eval $(echo "$package_env" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' )
-#     (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env)
-# fi
-# (cd /opt/stacks/default && curl "$docker_compose_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+mkdir -p /opt/stacks/default
+chmod 777 /opt/stacks/default
+(cd /opt/stacks/default && touch default.env)
+if curl -sfILo/dev/null "$package_url/default.env"; then
+    eval $(echo "$package_env" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' )
+    (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env)
+fi
+(cd /opt/stacks/default && curl "$docker_compose_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
 
-if [ "$RUN_POST_INSTALL" ]; then
+if [ $RUN_POST_INSTALL -eq 1 ]; then
     echo "Running post install script..."
-    # curl -s $package_url/post-install.sh | bash
+    curl -s $package_url/post-install.sh | bash
 fi
 
-if [ "$GPU_PASSTHROUGH_ENABLED" ]; then
+if [ $GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
     echo "Installing gpu packages..."
-    # apt-get install radeontop -y
+    apt-get install radeontop -y
 fi
 
-if [ "$DESKTOP_ENABLED" ]; then
+if [ $DESKTOP_ENABLED -eq 1 ]; then
     echo "Installing desktop packages and setting up desktop..."
-    # apt-get install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
-    # apt-get install xrdp -y
-    # adduser xrdp ssl-cert
-    # systemctl restart xrdp
-    # usermod -aG video $user
-    # usermod -aG render $user
-    # usermod -aG audio $user
-    # usermod -aG input $user
+    apt-get install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
+    apt-get install xrdp -y
+    adduser xrdp ssl-cert
+    systemctl restart xrdp
+    usermod -aG video $user
+    usermod -aG render $user
+    usermod -aG audio $user
+    usermod -aG input $user
 fi
