@@ -167,13 +167,13 @@ shift $((OPTIND-1))
 
 # check_script_running
 
-# if [ -z "$hostname" ]; then
-#     fatal "hostname is required"
-# fi
+if [ -z "$hostname" ]; then
+    fatal "hostname is required"
+fi
 
-# if [ -z "$ssh_public_key" ]; then
-#     fatal "ssh-public-key is required"
-# fi
+if [ -z "$ssh_public_key" ]; then
+    fatal "ssh-public-key is required"
+fi
 
 if [ -z "$package_url" ]; then
     fatal "package-url is required"
@@ -186,62 +186,62 @@ if [ "$package_env" ]; then
     fi
 fi
 
-# if [ -z "$vmid" ]; then
-#     vmid=$(pvesh get /cluster/nextid)
-# fi
+if [ -z "$vmid" ]; then
+    vmid=$(pvesh get /cluster/nextid)
+fi
 
-# if [ -z "$description" ]; then
-#     description=$hostname
-# fi
+if [ -z "$description" ]; then
+    description=$hostname
+fi
 
 template="$isos_volume:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
 
 echo "Creating container..."
-# pct create $vmid $template \
-#   --hostname $hostname \
-#   --description $description \
-#   --cores $cores \
-#   --cpulimit $cpulimit \
-#   --memory $memory \
-#   --swap $swap \
-#   --features $features \
-#   --net0 $net0 \
-#   --ostype $ostype \
-#   --password $password \
-#   --rootfs "volume=$volume:$size" \
-#   --storage $storage \
-#   --unprivileged 1 \
-#   --ssh-public-keys $ssh_public_keys \
-#   --start 1
+pct create $vmid $template \
+  --hostname $hostname \
+  --description $description \
+  --cores $cores \
+  --cpulimit $cpulimit \
+  --memory $memory \
+  --swap $swap \
+  --features $features \
+  --net0 $net0 \
+  --ostype $ostype \
+  --password $password \
+  --rootfs "volume=$volume:$size" \
+  --storage $storage \
+  --unprivileged 1 \
+  --ssh-public-keys $ssh_public_keys \
+  --start 1
 
-# until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be created..."; sleep 1; done
-# until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
-# until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
+until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be created..."; sleep 1; done
+until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
+until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
 
-# echo "Setting up ssh keys..."
-# ssh-keygen -f ~/.ssh/known_hosts -R $hostname
+echo "Setting up ssh keys..."
+ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
-# echo "$ssh_public_key" | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
+echo "$ssh_public_key" | ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
 
-# sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
+sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 
 echo "Getting package..."
 source /dev/stdin <<< $(curl -s $package_url/default.env)
 
-if [ "$GPU_PASSTHROUGH_ENABLED" ]; then
+if [ $GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
     echo "Setting up gpu passthrough..."
-    # pct shutdown $vmid
-    # until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to stop"; sleep 1; done
-    # IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
-    # for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
-    #     echo "lxc.cgroup2.devices.allow: $lxc_cgroup2_devices_allow" >> "/etc/pve/lxc/$vmid.conf"
-    # done
-    # IFS='|' read -a lxc_mount_entry_list_array <<< "$lxc_mount_entry_list" 
-    # for lxc_mount_entry in "${lxc_mount_entry_list_array[@]}"; do 
-    #     echo "lxc.mount.entry: $lxc_mount_entry" >> "/etc/pve/lxc/$vmid.conf"
-    # done
-    # pct start $vmid
-    # until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
+    pct shutdown $vmid
+    until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to stop"; sleep 1; done
+    IFS='|' read -a lxc_cgroup2_devices_allow_list_array <<< "$lxc_cgroup2_devices_allow_list" 
+    for lxc_cgroup2_devices_allow in "${lxc_cgroup2_devices_allow_list_array[@]}"; do 
+        echo "lxc.cgroup2.devices.allow: $lxc_cgroup2_devices_allow" >> "/etc/pve/lxc/$vmid.conf"
+    done
+    IFS='|' read -a lxc_mount_entry_list_array <<< "$lxc_mount_entry_list" 
+    for lxc_mount_entry in "${lxc_mount_entry_list_array[@]}"; do 
+        echo "lxc.mount.entry: $lxc_mount_entry" >> "/etc/pve/lxc/$vmid.conf"
+    done
+    pct start $vmid
+    until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 fi
 
 setup_ct_args="--user-password=$password --package-url=$package_url"
@@ -252,4 +252,4 @@ fi
 
 curl -s $setup_ct_script_url | ssh root@$hostname bash -s -- $setup_ct_args
 
-# ssh root@$hostname service sshd restart
+ssh root@$hostname service sshd restart
