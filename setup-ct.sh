@@ -16,6 +16,9 @@ package_env=
 user="dockeruser"
 user_fullname="Docker User"
 user_password="qwerty#123"
+RUN_POST_INSTALL=0
+GPU_PASSTHROUGH_ENABLED=0
+DESKTOP_ENABLED=0
 
 usage() {
   cat - >&2 <<EOF
@@ -24,7 +27,7 @@ NAME
  
 SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
-                     --package-url=<arg>
+                     [--package-url=<arg>]
                      [--user=<arg>]
                      [--user-fullname=<arg>]
                      [--user-password=<arg>]
@@ -44,7 +47,7 @@ OPTIONS
         user password for the container user
 
   --package-url=<arg>
-        package url required to setup ct
+        package url to setup ct
   
   --package-env=<arg>
         package env as a json string to setup ct
@@ -105,10 +108,6 @@ shift $((OPTIND-1))
 
 # check_script_running
 
-if [ -z "$package_url" ]; then
-    fatal "package-url is required"
-fi
-
 # if [ "$package_env" ]; then
 #     if ! jq -e . >/dev/null 2>&1 <<<"$package_env"; then
 #         fatal "package-env json string is invalid"
@@ -150,18 +149,27 @@ echo "Installing dockge..."
 mkdir -p /opt/stacks /opt/dockge
 (cd /opt/dockge && curl "https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml" --output compose.yaml && docker compose up -d)
 
-echo "Getting package..."
-source /dev/stdin <<< $(curl -s $package_url/default.env)
-
-echo "Installing and running docker compose app..."
-mkdir -p /opt/stacks/default
-chmod 777 /opt/stacks/default
-(cd /opt/stacks/default && touch default.env)
-if curl -sfILo/dev/null "$package_url/default.env"; then
-    eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-    (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
+if [ "$package_url" ]; then
+    echo "Getting package..."
+    source /dev/stdin <<< $(curl -s $package_url/default.env)
 fi
-(cd /opt/stacks/default && mkdir data && chmod 777 data && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+
+if [ $RUN_PRE_INSTALL -eq 1 ]; then
+    echo "Running pre install script..."
+    curl -s $package_url/pre-install.sh | bash
+fi
+
+if [ "$package_url" ]; then
+    echo "Installing and running docker compose app..."
+    mkdir -p /opt/stacks/default
+    chmod 777 /opt/stacks/default
+    (cd /opt/stacks/default && touch default.env)
+    if curl -sfILo/dev/null "$package_url/default.env"; then
+        eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
+        (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
+    fi
+    (cd /opt/stacks/default && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+fi
 
 if [ $RUN_POST_INSTALL -eq 1 ]; then
     echo "Running post install script..."

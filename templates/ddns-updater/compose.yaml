@@ -33,3 +33,4 @@ services:
       - LOG_CALLER=hidden
       # - SHOUTRRR_ADDRESSES=
     restart: always
+    user: "0:0"

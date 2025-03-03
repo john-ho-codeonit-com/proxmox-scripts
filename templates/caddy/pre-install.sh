@@ -15,7 +15,7 @@
 usage() {
   cat - >&2 <<EOF
 NAME
-    ${CMD:=${0##*/}} - Create a container
+    ${CMD:=${0##*/}} - Pre install script for containers
  
 SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
@@ -75,3 +75,5 @@ fatal() {
 shift $((OPTIND-1))
 
 # check_script_running
+
+ 

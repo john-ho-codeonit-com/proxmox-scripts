@@ -1,12 +1,16 @@
 services:
 
   caddy:
-    image: caddy:latest
+    image: caddy
     container_name: caddy
     restart: always
+    user: "0:0"
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - ./conf:/etc/caddy
+      - ./data:/data
     expose:
       - 80 # http
       - 443 # https

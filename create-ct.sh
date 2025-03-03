@@ -22,6 +22,7 @@ size=4
 volume="Containers"
 isos_volume=ISOs
 ssh_public_key=
+GPU_PASSTHROUGH_ENABLED=0
 
 # non-configurable
 ostype="debian"
@@ -47,12 +48,12 @@ SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
                      --hostname=<arg>
                      --ssh-public-key
-                     --package-url=<arg>
                      [--description=<arg>]
                      [--vmid=<arg>]
                      [--memory=<arg>]
                      [--size=<arg>]
                      [--password=<arg>]
+                     [--package-url=<arg>]
                      [--package-env=<arg>]
 
 OPTIONS
@@ -64,9 +65,6 @@ OPTIONS
   
   --ssh-public-key=<arg>
         ssh authorized key, required
-
-  --package-url=<arg>
-        package url required to setup ct
  
   --description=<arg>
         description for container
@@ -88,6 +86,9 @@ OPTIONS
 
   --password=<arg>
         password for container root user, will be qwerty#123 if not specified
+
+  --package-url=<arg>
+        package url to setup ct
 
   --package-env=<arg>
         package env as a json string to setup ct
@@ -175,10 +176,6 @@ if [ -z "$ssh_public_key" ]; then
     fatal "ssh-public-key is required"
 fi
 
-if [ -z "$package_url" ]; then
-    fatal "package-url is required"
-fi
-
 # if [ "$package_env" ]; then
 #     if ! jq -e . >/dev/null 2>&1 <<<"$package_env"; then
 #         fatal "package-env json string is invalid"
@@ -226,8 +223,11 @@ echo "$ssh_public_key" | ssh root@$hostname -oStrictHostKeyChecking=accept-new '
 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 
-echo "Getting package..."
-source /dev/stdin <<< $(curl -s $package_url/default.env)
+
+if [ "$package_url" ]; then
+    echo "Getting package..."
+    source /dev/stdin <<< $(curl -s $package_url/default.env)
+fi
 
 if [ $GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
     echo "Setting up gpu passthrough..."
@@ -245,7 +245,11 @@ if [ $GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
     until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 fi
 
-setup_ct_args="--user-password=$password --package-url=$package_url"
+setup_ct_args="--user-password=$password"
+
+if [ "$package_url" ]; then
+    setup_ct_args+=" --package-url='$package_url'"
+fi
 
 if [ "$package_env" ]; then
     setup_ct_args+=" --package-env='$package_env'"   

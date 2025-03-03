@@ -1,6 +1,7 @@
 services:
   ollama:
     restart: always
+    user: "0:0"
     image: ollama/ollama:rocm
     container_name: ollama
     environment:
@@ -22,6 +23,7 @@ services:
       - 11434:11434
   open-webui:
     restart: always
+    user: "0:0"
     image: ghcr.io/open-webui/open-webui:cuda
     container_name: open-webui
     environment:

@@ -15,7 +15,7 @@
 usage() {
   cat - >&2 <<EOF
 NAME
-    ${CMD:=${0##*/}} - Create a container
+    ${CMD:=${0##*/}} - Post install script for container
  
 SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
