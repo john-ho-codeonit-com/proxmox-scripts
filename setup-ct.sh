@@ -158,10 +158,10 @@ mkdir -p /opt/stacks/default
 chmod 777 /opt/stacks/default
 (cd /opt/stacks/default && touch default.env)
 if curl -sfILo/dev/null "$package_url/default.env"; then
-    eval $(echo "$package_env" | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' )
-    (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env)
+    eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
+    (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
 fi
-(cd /opt/stacks/default && curl "$docker_compose_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+(cd /opt/stacks/default && mkdir data && chmod 777 data && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
 
 if [ $RUN_POST_INSTALL -eq 1 ]; then
     echo "Running post install script..."

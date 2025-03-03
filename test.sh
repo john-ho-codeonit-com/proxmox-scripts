@@ -4,7 +4,7 @@
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
-     --hostname=llm \
+     --hostname=ddnsupdater \
      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/ddns-updater" \
      --package-env='{"PROVIDER":"namecheap","DOMAIN":"proxmoxx79.codeonit.com","PASSWORD":"efb5e9c74db84dfb8440b699b9496047"}' \
      --size=30 \
