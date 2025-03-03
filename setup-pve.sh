@@ -18,4 +18,13 @@ echo "Running Post Setup PVE script..."
 curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/post-setup-pve.sh" \
      | ssh root@$hostname bash -s
 
+echo "Setting up GPU passthrough..."
+cat > /etc/udev/rules.d/99-gpu-chmod666.rules << 'EOF'
+KERNEL=="renderD128", MODE="0666"
+KERNEL=="kfd", MODE="0666"
+KERNEL=="kfd", GROUP="render", MODE="0666" 
+KERNEL=="card0", MODE="0666"
+EOF
+udevadm control --reload-rules && udevadm trigger
+
 # create containers

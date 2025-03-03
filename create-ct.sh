@@ -217,6 +217,8 @@ until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be cre
 until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
 
+pct set $vmid -onboot 1
+
 echo "Setting up ssh keys..."
 ssh-keygen -f ~/.ssh/known_hosts -R $hostname
 
