@@ -170,7 +170,9 @@ if [ "$package_url" ]; then
         download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -r -c '.[]')
         IFS=$'\n'
         for download_file in ${download_file_array[@]}; do
-            curl "$package_url/$download_file" --output $docker_defualt_stack_path/$download_file
+            file=$(jq '.file' <<< "$download_file")
+            dest=$(jq -r '.dest' <<< "$download_file")
+            curl "$package_url/$download_file" --create-dirs --output $docker_defualt_stack_path/$dest/$file
         done
         unset IFS
     fi
