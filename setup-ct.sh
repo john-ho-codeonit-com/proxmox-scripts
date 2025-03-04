@@ -166,6 +166,7 @@ if [ "$package_url" ]; then
     echo "Installing and running docker compose app..."
     mkdir -p $docker_defualt_stack_path
     if [ $CT_SETUP_DOWNLOAD_FILES ]; then
+        echo "Downloading files..."
         download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -r -c '.[]')
         IFS=$'\n'
         for download_file in ${download_file_array[@]}; do
