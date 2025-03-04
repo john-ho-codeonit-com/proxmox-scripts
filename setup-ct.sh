@@ -19,6 +19,10 @@ user_password="qwerty#123"
 CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
 CT_SETUP_DESKTOP_ENABLED=0
 
+# non-configurable
+docker_stacks_path=/opt/stacks/default
+docker_defualt_stack_path="$docker_stacks_path/default"
+
 usage() {
   cat - >&2 <<EOF
 NAME
@@ -145,7 +149,7 @@ cp /root/.ssh/authorized_keys /home/$user/.ssh
 chown -R $user:$user /home/$user/.ssh
 
 echo "Installing dockge..."
-mkdir -p /opt/stacks /opt/dockge
+mkdir -p $docker_stacks_path /opt/dockge
 (cd /opt/dockge && curl "https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml" --output compose.yaml && docker compose up -d)
 
 if [ "$package_url" ]; then
@@ -160,23 +164,22 @@ fi
 
 if [ "$package_url" ]; then
     echo "Installing and running docker compose app..."
-    mkdir -p /opt/stacks/default
+    mkdir -p $docker_defualt_stack_path
     if [ $CT_SETUP_DOWNLOAD_FILES ]; then
-        download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -c '.[]')
+        download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -r -c '.[]')
         IFS=$'\n'
         for download_file in ${download_file_array[@]}; do
-            echo "Downloading $download_file..."
-            curl "$package_url/$download_file" --output $download_file
+            curl "$package_url/$download_file" --output $docker_defualt_stack_path/$download_file
         done
         unset IFS
     fi
 
-    (cd /opt/stacks/default && touch default.env)
+    touch $docker_defualt_stack_path/default.env
     if curl -sfILo/dev/null "$package_url/default.env"; then
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-        (cd /opt/stacks/default && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
+        curl "$package_url/default.env" --output $docker_defualt_stack_path/default.env && envsubst < $docker_defualt_stack_path/default.env | tee default.env)
     fi
-    (cd /opt/stacks/default && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+    (cd $docker_defualt_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
 fi
 
 if curl -sfILo/dev/null "$package_url/setup.sh"; then
