@@ -21,7 +21,7 @@ CT_SETUP_DESKTOP_ENABLED=0
 
 # non-configurable
 docker_stacks_path=/opt/stacks
-docker_defualt_stack_path="$docker_stacks_path/default"
+docker_default_stack_path="$docker_stacks_path/default"
 
 usage() {
   cat - >&2 <<EOF
@@ -164,7 +164,7 @@ fi
 
 if [ "$package_url" ]; then
     echo "Installing and running docker compose app..."
-    mkdir -p $docker_defualt_stack_path
+    mkdir -p $docker_default_stack_path
     if [ $CT_SETUP_DOWNLOAD_FILES ]; then
         echo "Downloading files..."
         download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -r -c '.[]')
@@ -172,17 +172,17 @@ if [ "$package_url" ]; then
         for download_file in ${download_file_array[@]}; do
             file=$(jq '.file' <<< "$download_file")
             dest=$(jq -r '.dest' <<< "$download_file")
-            mkdir -p $docker_defualt_stack_path/$dest
-            curl "$package_url/$file" --output $docker_defualt_stack_path/$dest/$file
+            mkdir -p $docker_default_stack_path/$dest
+            curl "$package_url/$file" --output $docker_default_stack_path/$dest/$file
         done
         unset IFS
     fi
-    touch $docker_defualt_stack_path/default.env
+    touch $docker_default_stack_path/default.env
     if curl -sfILo/dev/null "$package_url/default.env"; then
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-        (cd $docker_defualt_stack_path && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
+        (cd $docker_default_stack_path && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
     fi
-    (cd $docker_defualt_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+    (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
 fi
 
 if curl -sfILo/dev/null "$package_url/setup.sh"; then
