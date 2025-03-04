@@ -175,7 +175,6 @@ if [ "$package_url" ]; then
         done
         unset IFS
     fi
-
     touch $docker_defualt_stack_path/default.env
     if curl -sfILo/dev/null "$package_url/default.env"; then
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
