@@ -20,7 +20,7 @@ CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
 CT_SETUP_DESKTOP_ENABLED=0
 
 # non-configurable
-docker_stacks_path=/opt/stacks/default
+docker_stacks_path=/opt/stacks
 docker_defualt_stack_path="$docker_stacks_path/default"
 
 usage() {
