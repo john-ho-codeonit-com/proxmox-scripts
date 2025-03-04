@@ -16,8 +16,8 @@ package_env=
 user="dockeruser"
 user_fullname="Docker User"
 user_password="qwerty#123"
-GPU_PASSTHROUGH_ENABLED=0
-DESKTOP_ENABLED=0
+CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
+CT_SETUP_DESKTOP_ENABLED=0
 
 usage() {
   cat - >&2 <<EOF
@@ -154,17 +154,18 @@ if [ "$package_url" ]; then
 fi
 
 if curl -sfILo/dev/null "$package_url/init-setup.sh"; then
-    echo "Running pre install script..."
-    curl -s $package_url/pre-install.sh | bash
+    echo "Running init setup..."
+    curl -s $package_url/init-setup.sh | bash
 fi
 
 if [ "$package_url" ]; then
     echo "Installing and running docker compose app..."
     mkdir -p /opt/stacks/default
-    if [ $DOWNLOAD_FILES ]; then
-        download_file_array=$(echo "$DOWNLOAD_FILES" | jq -c '.[]')
+    if [ $CT_SETUP_DOWNLOAD_FILES ]; then
+        download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -c '.[]')
         IFS=$'\n'
         for download_file in ${download_file_array[@]}; do
+            echo "Downloading $download_file..."
             curl "$package_url/$download_file" --output $download_file
         done
         unset IFS
@@ -180,15 +181,15 @@ fi
 
 if curl -sfILo/dev/null "$package_url/setup.sh"; then
     echo "Running post install script..."
-    curl -s $package_url/post-install.sh | bash
+    curl -s $package_url/setup.sh | bash
 fi
 
-if [ $GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
+if [ $CT_SETUP_GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
     echo "Installing gpu packages..."
     apt-get install radeontop -y
 fi
 
-if [ $DESKTOP_ENABLED -eq 1 ]; then
+if [ $CT_SETUP_DESKTOP_ENABLED -eq 1 ]; then
     echo "Installing desktop packages and setting up desktop..."
     apt-get install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils -y
     apt-get install xrdp -y

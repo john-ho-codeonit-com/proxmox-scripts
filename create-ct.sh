@@ -22,7 +22,7 @@ size=4
 volume="Containers"
 isos_volume=ISOs
 ssh_public_key=
-GPU_PASSTHROUGH_ENABLED=0
+CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
 
 # non-configurable
 ostype="debian"
@@ -228,7 +228,7 @@ if [ "$package_url" ]; then
     source /dev/stdin <<< $(curl -s $package_url/default.env)
 fi
 
-if [ $GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
+if [ $CT_SETUP_GPU_PASSTHROUGH_ENABLED -eq 1 ]; then
     echo "Setting up gpu passthrough..."
     pct shutdown $vmid
     until [[ $(pct status $vmid | awk '{print $2}') == "stopped" ]]; do echo "waiting for container to stop"; sleep 1; done
