@@ -177,7 +177,7 @@ if [ "$package_url" ]; then
     touch $docker_defualt_stack_path/default.env
     if curl -sfILo/dev/null "$package_url/default.env"; then
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-        curl "$package_url/default.env" --output $docker_defualt_stack_path/default.env && envsubst < $docker_defualt_stack_path/default.env | tee default.env)
+        (cd $docker_defualt_stack_path && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
     fi
     (cd $docker_defualt_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
 fi
