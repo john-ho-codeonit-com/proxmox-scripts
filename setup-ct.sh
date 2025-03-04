@@ -172,7 +172,8 @@ if [ "$package_url" ]; then
         for download_file in ${download_file_array[@]}; do
             file=$(jq '.file' <<< "$download_file")
             dest=$(jq -r '.dest' <<< "$download_file")
-            curl "$package_url/$file" --create-dirs --output $docker_defualt_stack_path/$dest/$file
+            mkdir -p $docker_defualt_stack_path/$dest
+            curl "$package_url/$file" --output $docker_defualt_stack_path/$dest/$file
         done
         unset IFS
     fi
