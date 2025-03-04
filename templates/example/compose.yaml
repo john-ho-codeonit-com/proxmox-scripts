@@ -1,14 +1,14 @@
 services:
-  caddy:
-    image: caddy
-    container_name: caddy
+  example:
+    image: example
+    container_name: example
     restart: always
     user: "0:0"
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./conf:/etc/caddy
+      - ./conf:/etc/example
       - ./data:/data
     expose:
       - 80 # http
