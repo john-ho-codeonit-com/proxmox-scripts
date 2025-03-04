@@ -16,7 +16,6 @@ package_env=
 user="dockeruser"
 user_fullname="Docker User"
 user_password="qwerty#123"
-RUN_POST_INSTALL=0
 GPU_PASSTHROUGH_ENABLED=0
 DESKTOP_ENABLED=0
 
@@ -154,7 +153,7 @@ if [ "$package_url" ]; then
     source /dev/stdin <<< $(curl -s $package_url/default.env)
 fi
 
-if [ $RUN_PRE_INSTALL -eq 1 ]; then
+if curl -sfILo/dev/null "$package_url/init-setup.sh"; then
     echo "Running pre install script..."
     curl -s $package_url/pre-install.sh | bash
 fi
@@ -162,7 +161,15 @@ fi
 if [ "$package_url" ]; then
     echo "Installing and running docker compose app..."
     mkdir -p /opt/stacks/default
-    chmod 777 /opt/stacks/default
+    if [ $DOWNLOAD_FILES ]; then
+        download_file_array=$(echo "$DOWNLOAD_FILES" | jq -c '.[]')
+        IFS=$'\n'
+        for download_file in ${download_file_array[@]}; do
+            curl "$package_url/$download_file" --output $download_file
+        done
+        unset IFS
+    fi
+
     (cd /opt/stacks/default && touch default.env)
     if curl -sfILo/dev/null "$package_url/default.env"; then
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
@@ -171,7 +178,7 @@ if [ "$package_url" ]; then
     (cd /opt/stacks/default && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
 fi
 
-if [ $RUN_POST_INSTALL -eq 1 ]; then
+if curl -sfILo/dev/null "$package_url/setup.sh"; then
     echo "Running post install script..."
     curl -s $package_url/post-install.sh | bash
 fi

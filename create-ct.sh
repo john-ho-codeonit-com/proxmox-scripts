@@ -223,7 +223,6 @@ echo "$ssh_public_key" | ssh root@$hostname -oStrictHostKeyChecking=accept-new '
 
 sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_config
 
-
 if [ "$package_url" ]; then
     echo "Getting package..."
     source /dev/stdin <<< $(curl -s $package_url/default.env)
