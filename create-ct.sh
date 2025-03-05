@@ -206,7 +206,7 @@ pct create $vmid $template \
   --password $password \
   --rootfs "volume=$volume:$size" \
   --storage $storage \
-#   --unprivileged 0 \
+  --unprivileged 0 \
   --ssh-public-keys $ssh_public_keys \
   --start 1
 
