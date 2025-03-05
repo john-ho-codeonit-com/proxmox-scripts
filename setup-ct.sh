@@ -172,6 +172,8 @@ if [ "$package_url" ]; then
         for download_file in ${download_file_array[@]}; do
             file=$(jq -r '.file' <<< "$download_file")
             dest=$(jq -r '.dest' <<< "$download_file")
+            echo ...$file...
+            echo ...$dest...
             mkdir -p $docker_default_stack_path/$dest
             curl "$package_url/$file" --output $docker_default_stack_path/$dest/$file
         done
