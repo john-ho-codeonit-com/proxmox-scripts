@@ -165,12 +165,12 @@ fi
 if [ "$package_url" ]; then
     echo "Installing and running docker compose app..."
     mkdir -p $docker_default_stack_path
-    if [ $CT_SETUP_DOWNLOAD_FILES ]; then
+    if [ "$CT_SETUP_DOWNLOAD_FILES" ]; then
         echo "Downloading files..."
         download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -r -c '.[]')
         IFS=$'\n'
         for download_file in ${download_file_array[@]}; do
-            file=$(jq '.file' <<< "$download_file")
+            file=$(jq -r '.file' <<< "$download_file")
             dest=$(jq -r '.dest' <<< "$download_file")
             mkdir -p $docker_default_stack_path/$dest
             curl "$package_url/$file" --output $docker_default_stack_path/$dest/$file
