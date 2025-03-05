@@ -22,6 +22,7 @@ size=4
 volume="Containers"
 isos_volume=ISOs
 ssh_public_key=
+unprivileged=0
 CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
 
 # non-configurable
@@ -52,6 +53,7 @@ SYNOPSIS
                      [--vmid=<arg>]
                      [--memory=<arg>]
                      [--size=<arg>]
+                     [--unprivileged]
                      [--password=<arg>]
                      [--package-url=<arg>]
                      [--package-env=<arg>]
@@ -86,6 +88,9 @@ OPTIONS
 
   --password=<arg>
         password for container root user, will be qwerty#123 if not specified
+
+  --unprivileged=<arg>
+        set the container to be unprivileged which is 0 by default and 1 for privileged
 
   --package-url=<arg>
         package url to setup ct
@@ -131,6 +136,8 @@ while getopts "$optspec" optchar; do
                     hostname="$OPTARG" ;;
                 ssh-public-key|ssh-public-key=*) next_arg
                     ssh_public_key="$OPTARG" ;;
+                unprivileged|unprivileged=*) next_arg
+                    unprivileged="$OPTARG" ;;
                 description|description=*) next_arg
                     description="$OPTARG" ;;
                 vmid|vmid=*) next_arg
@@ -206,7 +213,7 @@ pct create $vmid $template \
   --password $password \
   --rootfs "volume=$volume:$size" \
   --storage $storage \
-  --unprivileged 1 \
+  --unprivileged $unprivileged \
   --ssh-public-keys $ssh_public_keys \
   --start 1
 
