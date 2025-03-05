@@ -15,7 +15,8 @@ curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/r
      --hostname=caddy \
      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy" \
      --size=30 \
-     --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP"
+     --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
+     --unprivileged=1
 
 # CT_SETUP_DOWNLOAD_FILES='["CaddyFile"]'
 # package_url='https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy'
