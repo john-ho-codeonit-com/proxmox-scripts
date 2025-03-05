@@ -1,6 +1,8 @@
 services:
   caddy:
-    image: caddy
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: caddy
     restart: always
     user: "0:0"

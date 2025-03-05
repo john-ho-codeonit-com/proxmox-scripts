@@ -174,8 +174,12 @@ if [ "$package_url" ]; then
             dest=$(jq -r '.dest' <<< "$download_file")
             echo ...$file...
             echo ...$dest...
-            mkdir -p $docker_default_stack_path/$dest
-            curl "$package_url/$file" --output $docker_default_stack_path/$dest/$file
+            download_output_file=$docker_default_stack_path/$file
+            if [ -n "$dest" ]; then
+                mkdir -p $docker_default_stack_path/$dest
+                download_output_file=$docker_default_stack_path/$dest/$file
+            fi
+            curl "$package_url/$file" --output $download_output_file
         done
         unset IFS
     fi
