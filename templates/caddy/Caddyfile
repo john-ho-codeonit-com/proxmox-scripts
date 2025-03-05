@@ -8,12 +8,21 @@
 # this machine's public IP, then replace ":80" below with your
 # domain name.
 
-:80 {
+apps.codeonit.com {
+
+	reverse_proxy /dockge/* 192.168.50.189:5001
+
+	#tls {
+    #	dns namecheap {
+	#		api_key yourapikeythatislong
+	#		user yourapiuser
+	#	}
+	#}
 	# Set this path to your site's directory.
-	root * /usr/share/caddy
+	# root * /usr/share/caddy
 
 	# Enable the static file server.
-	file_server
+	# file_server
 
 	# Another common task is to set up a reverse proxy:
 	# reverse_proxy localhost:8080
