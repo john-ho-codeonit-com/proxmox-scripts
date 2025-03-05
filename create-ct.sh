@@ -22,7 +22,7 @@ size=4
 volume="Containers"
 isos_volume=ISOs
 ssh_public_key=
-unprivileged=0
+unprivileged=1
 CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
 
 # non-configurable
@@ -222,7 +222,6 @@ until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting 
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for container to start..."; sleep 1; done
 
 pct set $vmid -onboot 1
-pct set $vmid unprivileged 1
 
 echo "Setting up ssh keys..."
 ssh-keygen -f ~/.ssh/known_hosts -R $hostname
