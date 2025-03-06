@@ -178,7 +178,7 @@ shift $((OPTIND-1))
 if [ -z "$hostname" ]; then
         fatal "hostname is required"
     else
-        if pct list | grep "$hostname"; then
+        if pct list | grep -q "$hostname"; then
             fatal "hostname already exists"
         fi
 fi
