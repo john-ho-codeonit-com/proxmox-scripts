@@ -221,6 +221,7 @@ if [ $CT_SETUP_DESKTOP_ENABLED -eq 1 ]; then
     usermod -aG render $user
     usermod -aG audio $user
     usermod -aG input $user
+fi
 
-# ip_address=$(hostname -I | cut -d' ' -f1)
-# echo "Completed setting up container with IPv4 address is $ip_address"
+ip_address=$(hostname -I | cut -d' ' -f1)
+echo "Completed setting up container with IPv4 address is $ip_address"
