@@ -196,7 +196,7 @@ if [ "$package_url" ]; then
         echo "exporting"
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
         echo "...$NAMECHEAP_API_KEY..."
-        envsubst < $docker_default_stack_path/.outputenv
+        envsubst < $docker_default_stack_path/.env > $docker_default_stack_path/.outputenv 
     fi
     (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file .env up -d)
 fi
