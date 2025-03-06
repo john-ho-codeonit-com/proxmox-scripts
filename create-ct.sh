@@ -176,7 +176,11 @@ shift $((OPTIND-1))
 # check_script_running
 
 if [ -z "$hostname" ]; then
-    fatal "hostname is required"
+        fatal "hostname is required"
+    else
+        if pct list | grep "$hostname"; then
+            fatal "hostname already exists"
+        fi
 fi
 
 if [ -z "$ssh_public_key" ]; then
