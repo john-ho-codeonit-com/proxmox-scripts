@@ -189,7 +189,8 @@ if [ "$package_url" ]; then
         echo ...$package_env...
         curl "$package_url/.env" --output $docker_default_stack_path/.env
         cat $docker_default_stack_path/.env
-        # eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
+        echo $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')
+        eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
         (cd $docker_default_stack_path && envsubst < .env | tee .env)
     fi
     (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file .env up -d)
