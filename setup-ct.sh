@@ -179,12 +179,14 @@ if [ "$package_url" ]; then
                 mkdir -p $docker_default_stack_path/$dest
                 download_output_file=$docker_default_stack_path/$dest/$file
             fi
+            echo ...$download_output_file...
             curl "$package_url/$file" --output $download_output_file
         done
         unset IFS
     fi
     touch $docker_default_stack_path/.env
     if curl -sfILo/dev/null "$package_url/.env"; then
+        echo ...$package_env...
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
         (cd $docker_default_stack_path && curl "$package_url/.env" --output .env && envsubst < .env | tee .env)
     fi
