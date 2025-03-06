@@ -5,6 +5,7 @@ curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/r
      --hostname=caddy \
      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy" \
      --size=16 \
+     --memory=4096 \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
      --package-env='{"NAMECHEAP_API_KEY":"a2c3898476b5483cb9ffb1c8308fe2c8","NAMECHEAP_USER":"johnphho","DOCKGE_URL":"dockge:5001","AUTHENTIK_URL":"authentik:9000"}'
 
