@@ -4,27 +4,23 @@
 
 # curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
 #      | bash -s -- \
-#      --hostname=llm \
-#      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/llm" \
-#      --package-env='{"PROVIDER":"namecheap","DOMAIN":"proxmoxx79.codeonit.com","PASSWORD":"efb5e9c74db84dfb8440b699b9496047"}' \
-#      --size=30 \
+#      --hostname=prompt \
+#      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/prompt" \
+#      --memory=16000
+#      --size=120 \
+#      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP"
+
+# curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
+#      | bash -s -- \
+#      --hostname=caddy \
+#      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy" \
+#      --size=16 \
 #      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP"
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
-     --hostname=caddy \
-     --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy" \
-     --size=30 \
+     --hostname=authentik \
+     --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/authentik" \
+     --size=120 \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
-     --unprivileged=1
-
-# CT_SETUP_DOWNLOAD_FILES='["CaddyFile"]'
-# package_url='https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy'
-# download_file_array=$(echo "$CT_SETUP_DOWNLOAD_FILES" | jq -r -c '.[]')
-# IFS=$'\n'
-# for download_file in ${download_file_array[@]}; do
-#     echo $download_file
-#     # file=$(echo "$download_file" | tr -d '"')
-#     # (cd /opt/stacks/default && curl "$package_url/$download_file" --output $download_file)
-# done
-# unset IFS
+     --package-env='{"PG_PASS":"zECfDucu9dGi5mtYQwb71lZpxji0hWQtERtMjpQjItCBrmh6","AUTHENTIK_SECRET_KEY":"1kprlKgUGSBPDh1INQBc5k8wpDuReQlQJ3V5hz79A5MjKNCUM/zOZZx9HzH8T7dBfqZy2KdlFFcGDSwA","AUTHENTIK_ERROR_REPORTING__ENABLED":true}' \
