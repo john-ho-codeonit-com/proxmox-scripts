@@ -154,7 +154,7 @@ mkdir -p $docker_stacks_path /opt/dockge
 
 if [ "$package_url" ]; then
     echo "Getting package..."
-    source /dev/stdin <<< $(curl -s $package_url/.env)
+    source /dev/stdin <<< $(curl -s "$package_url/.env")
 fi
 
 if curl -sfILo/dev/null "$package_url/init-setup.sh"; then
@@ -187,6 +187,7 @@ if [ "$package_url" ]; then
     touch $docker_default_stack_path/.env
     if curl -sfILo/dev/null "$package_url/.env"; then
         echo ...$package_env...
+        echo $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
         (cd $docker_default_stack_path && curl "$package_url/.env" --output .env && envsubst < .env | tee .env)
     fi
