@@ -186,12 +186,16 @@ if [ "$package_url" ]; then
     fi
     touch $docker_default_stack_path/.env
     if curl -sfILo/dev/null "$package_url/.env"; then
-        echo ...$package_env...
+        echo ...package_env=$package_env...
+        echo "Downloading .env file..."
         curl "$package_url/.env" --output $docker_default_stack_path/.env
+        echo "Showing .env file"
         cat $docker_default_stack_path/.env
+        echo "showing export"
         echo $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')
+        echo "exporting"
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-        (cd $docker_default_stack_path && envsubst < .env | tee .env)
+        envsubst < $docker_default_stack_path/.env | tee $docker_default_stack_path/.env
     fi
     (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file .env up -d)
 fi
