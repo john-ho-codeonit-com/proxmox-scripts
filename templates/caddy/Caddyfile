@@ -8,14 +8,38 @@
 # this machine's public IP, then replace ":80" below with your
 # domain name.
 
-dockge.codeonit.com {
-	reverse_proxy {$DOCKGE_URL}
+(authenticate) {
+	reverse_proxy /outpost.goauthentik.io/* {$AUTHENTIK_URL}:9000
+
+	forward_auth {$AUTHENTIK_URL}:9000 {
+		uri /outpost.goauthentik.io/auth/caddy
+		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
+		trusted_proxies private_ranges
+	}
+}
+
+*.codeonit.com {
+
 	tls {
     	dns namecheap {
 			api_key {$NAMECHEAP_API_KEY}
 			user {$NAMECHEAP_USER}
 		}
 	}
+
+	@dockge host dockge.codeonit.com
+	handle @dockge {
+		import authenticate
+		reverse_proxy {$DOCKGE_URL}
+	}
+
+	@apps host apps.codeonit.com
+	handle @apps {
+		reverse_proxy {$AUTHENTIK_URL}
+	}
+}
+
+# :80 {
 	# Set this path to your site's directory.
 	# root * /usr/share/caddy
 
@@ -27,70 +51,7 @@ dockge.codeonit.com {
 
 	# Or serve a PHP site through php-fpm:
 	# php_fastcgi localhost:9000
-}
-
-ddnsupdater.codeonit.com {
-	reverse_proxy {$DDNS_UPDATER_URL}
-	tls {
-    	dns namecheap {
-			api_key {$NAMECHEAP_API_KEY}
-			user {$NAMECHEAP_USER}
-		}
-	}
-	# Set this path to your site's directory.
-	# root * /usr/share/caddy
-
-	# Enable the static file server.
-	# file_server
-
-	# Another common task is to set up a reverse proxy:
-	# reverse_proxy localhost:8080
-
-	# Or serve a PHP site through php-fpm:
-	# php_fastcgi localhost:9000
-}
-
-prompt.codeonit.com {
-	reverse_proxy {$OPEN_WEBUI_URL}
-	tls {
-    	dns namecheap {
-			api_key {$NAMECHEAP_API_KEY}
-			user {$NAMECHEAP_USER}
-		}
-	}
-	# Set this path to your site's directory.
-	# root * /usr/share/caddy
-
-	# Enable the static file server.
-	# file_server
-
-	# Another common task is to set up a reverse proxy:
-	# reverse_proxy localhost:8080
-
-	# Or serve a PHP site through php-fpm:
-	# php_fastcgi localhost:9000
-}
-
-comfyui.codeonit.com {
-	reverse_proxy {$COMFYUI_URL}
-	tls {
-    	dns namecheap {
-			api_key {$NAMECHEAP_API_KEY}
-			user {$NAMECHEAP_USER}
-		}
-	}
-	# Set this path to your site's directory.
-	# root * /usr/share/caddy
-
-	# Enable the static file server.
-	# file_server
-
-	# Another common task is to set up a reverse proxy:
-	# reverse_proxy localhost:8080
-
-	# Or serve a PHP site through php-fpm:
-	# php_fastcgi localhost:9000
-}
+# }
 
 # Refer to the Caddy docs for more information:
 # https://caddyserver.com/docs/caddyfile
