@@ -8,16 +8,77 @@
 # this machine's public IP, then replace ":80" below with your
 # domain name.
 
-apps.codeonit.com {
+dockge.codeonit.com {
+	reverse_proxy {$DOCKGE_URL}
+	tls {
+    	dns namecheap {
+			api_key {$NAMECHEAP_API_KEY}
+			user {$NAMECHEAP_USER}
+		}
+	}
+	# Set this path to your site's directory.
+	# root * /usr/share/caddy
 
-	reverse_proxy /dockge/* 192.168.50.189:5001
+	# Enable the static file server.
+	# file_server
 
-	#tls {
-    #	dns namecheap {
-	#		api_key yourapikeythatislong
-	#		user yourapiuser
-	#	}
-	#}
+	# Another common task is to set up a reverse proxy:
+	# reverse_proxy localhost:8080
+
+	# Or serve a PHP site through php-fpm:
+	# php_fastcgi localhost:9000
+}
+
+ddnsupdater.codeonit.com {
+	reverse_proxy {$DDNS_UPDATER_URL}
+	tls {
+    	dns namecheap {
+			api_key {$NAMECHEAP_API_KEY}
+			user {$NAMECHEAP_USER}
+		}
+	}
+	# Set this path to your site's directory.
+	# root * /usr/share/caddy
+
+	# Enable the static file server.
+	# file_server
+
+	# Another common task is to set up a reverse proxy:
+	# reverse_proxy localhost:8080
+
+	# Or serve a PHP site through php-fpm:
+	# php_fastcgi localhost:9000
+}
+
+prompt.codeonit.com {
+	reverse_proxy {$OPEN_WEBUI_URL}
+	tls {
+    	dns namecheap {
+			api_key {$NAMECHEAP_API_KEY}
+			user {$NAMECHEAP_USER}
+		}
+	}
+	# Set this path to your site's directory.
+	# root * /usr/share/caddy
+
+	# Enable the static file server.
+	# file_server
+
+	# Another common task is to set up a reverse proxy:
+	# reverse_proxy localhost:8080
+
+	# Or serve a PHP site through php-fpm:
+	# php_fastcgi localhost:9000
+}
+
+comfyui.codeonit.com {
+	reverse_proxy {$COMFYUI_URL}
+	tls {
+    	dns namecheap {
+			api_key {$NAMECHEAP_API_KEY}
+			user {$NAMECHEAP_USER}
+		}
+	}
 	# Set this path to your site's directory.
 	# root * /usr/share/caddy
 

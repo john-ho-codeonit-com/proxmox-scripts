@@ -3,7 +3,7 @@
 docker_stacks_path=/opt/stacks
 docker_default_stack_path="$docker_stacks_path/default"
 package_url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/caddy"
-source /dev/stdin <<< $(curl -s $package_url/default.env)
+source /dev/stdin <<< $(curl -s $package_url/.env)
 echo "Installing and running docker compose app..."
 mkdir -p $docker_default_stack_path
 if [ $"CT_SETUP_DOWNLOAD_FILES" ]; then
@@ -20,9 +20,9 @@ if [ $"CT_SETUP_DOWNLOAD_FILES" ]; then
     done
     unset IFS
 fi
-touch $docker_default_stack_path/default.env
-if curl -sfILo/dev/null "$package_url/default.env"; then
+touch $docker_default_stack_path/.env
+if curl -sfILo/dev/null "$package_url/.env"; then
     eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-    (cd $docker_default_stack_path && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
+    (cd $docker_default_stack_path && curl "$package_url/.env" --output .env && envsubst < .env | tee .env)
 fi
-(cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+(cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file .env up -d)

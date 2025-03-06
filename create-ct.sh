@@ -232,7 +232,7 @@ sed -i 's/#\?\(PermitRootLogin\s*\).*$/\1 without-password/' /etc/ssh/sshd_confi
 
 if [ "$package_url" ]; then
     echo "Getting package..."
-    source /dev/stdin <<< $(curl -s $package_url/default.env)
+    source /dev/stdin <<< $(curl -s $package_url/.env)
 fi
 
 if [ $CT_SETUP_GPU_PASSTHROUGH_ENABLED -eq 1 ]; then

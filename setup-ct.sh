@@ -154,7 +154,7 @@ mkdir -p $docker_stacks_path /opt/dockge
 
 if [ "$package_url" ]; then
     echo "Getting package..."
-    source /dev/stdin <<< $(curl -s $package_url/default.env)
+    source /dev/stdin <<< $(curl -s $package_url/.env)
 fi
 
 if curl -sfILo/dev/null "$package_url/init-setup.sh"; then
@@ -183,12 +183,12 @@ if [ "$package_url" ]; then
         done
         unset IFS
     fi
-    touch $docker_default_stack_path/default.env
-    if curl -sfILo/dev/null "$package_url/default.env"; then
+    touch $docker_default_stack_path/.env
+    if curl -sfILo/dev/null "$package_url/.env"; then
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-        (cd $docker_default_stack_path && curl "$package_url/default.env" --output default.env && envsubst < default.env | tee default.env)
+        (cd $docker_default_stack_path && curl "$package_url/.env" --output .env && envsubst < .env | tee .env)
     fi
-    (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file default.env up -d)
+    (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file .env up -d)
 fi
 
 if curl -sfILo/dev/null "$package_url/setup.sh"; then
