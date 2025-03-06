@@ -14,6 +14,12 @@ ssh -t root@x79pve 'bash -c "$(wget -qLO - https://github.com/community-scripts/
 sleep 20
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for reboot to complete..."; sleep 1; done
 
+echo  "Installing PVE LXC IP-Tag..."
+ssh -t root@x79pve 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/add-lxc-iptag.sh)"'
+
+echo  "Installing Ultimate Updater for PVE..."
+ssh -t root@x79pve 'bash -c "$(wget -qLO - https://raw.githubusercontent.com/BassT23/Proxmox/master/install.sh)"'
+
 echo "Running Post Setup PVE script..."
 curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/post-setup-pve.sh" \
      | ssh root@$hostname bash -s
