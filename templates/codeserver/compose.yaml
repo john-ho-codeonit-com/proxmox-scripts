@@ -1,7 +1,7 @@
 ---
 services:
   code-server:
-    image: lscr.io/linuxserver/code-server:latest
+    image: lscr.io/linuxserver/code-server:version-4.96.4
     container_name: code-server
     environment:
       - PUID=1000
@@ -11,7 +11,7 @@ services:
       - HASHED_PASSWORD= #optional
       - SUDO_PASSWORD= #optional
       - SUDO_PASSWORD_HASH= #optional
-      - PROXY_DOMAIN=codeserver.codeonit.com #optional
+      # - PROXY_DOMAIN=codeserver.codeonit.com #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
       - ./config:/config

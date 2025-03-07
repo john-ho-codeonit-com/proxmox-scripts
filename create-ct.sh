@@ -24,6 +24,7 @@ isos_volume=ISOs
 ssh_public_key=
 unprivileged=1
 CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
+mac=
 
 # non-configurable
 ostype="debian"
@@ -33,7 +34,6 @@ lxc_mount_entry_list="/dev/dri dev/dri none bind,optional,create=dir|/dev/dri/re
 cores=12
 cpulimit=12
 swap=0
-net0="name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth"
 features="nesting=1"
 ssh_public_keys="/root/.ssh/authorized_keys"
 net0="name=eth0,firewall=1,ip=dhcp,bridge=vmbr0,type=veth"
@@ -53,6 +53,7 @@ SYNOPSIS
                      [--vmid=<arg>]
                      [--memory=<arg>]
                      [--size=<arg>]
+                     [--mac=<mac>]
                      [--unprivileged]
                      [--password=<arg>]
                      [--package-url=<arg>]
@@ -75,10 +76,13 @@ OPTIONS
         vmid for container, will be the cluster nexid if not specified
   
   --memory=<arg>
-        memory for container in MB, will be 1024MB if not specified
+        memory for container in MB, will be $memory MB if not specified
 
   --size=<arg>
-        storage size for container in GB, will be 15GB if not specified
+        storage size for container in GB, will be $size GB if not specified
+ 
+  --mac=<arg>
+        mac address, will be $mac if not specified
 
   --volume=<arg>
         rootfs volume to be used, will be Containers if not specified
@@ -90,7 +94,7 @@ OPTIONS
         password for container root user, will be qwerty#123 if not specified
 
   --unprivileged=<arg>
-        set the container to be unprivileged which is 0 by default and 1 for privileged
+        set the container to be unprivileged, $unprivileged if not specified
 
   --package-url=<arg>
         package url to setup ct
@@ -146,6 +150,8 @@ while getopts "$optspec" optchar; do
                     memory="$OPTARG" ;;
                 size|size=*) next_arg
                     size="$OPTARG" ;;
+                mac|mac=*) next_arg
+                    mac="$OPTARG" ;;
                 volume|volume=*) next_arg
                     volume="$OPTARG" ;;
                 isos-volume|isos-volume=*) next_arg
@@ -199,6 +205,10 @@ fi
 
 if [ -z "$description" ]; then
     description=$hostname
+fi
+
+if [ -z "$mac" ]; then
+    net0+=",hwaddr=$mac"
 fi
 
 template="$isos_volume:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
