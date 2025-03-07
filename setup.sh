@@ -21,19 +21,19 @@ curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/r
      --size=16 \
      --memory=4096 \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
-     --package-env='{"NAMECHEAP_API_KEY":"NAMECHEAP_API_KEY","NAMECHEAP_USER":"NAMECHEAP_USER","DOCKGE_URL":"dockge:5001","AUTHENTIK_URL":"authentik:9000"}'
+     --package-env='{"NAMECHEAP_API_KEY":"NAMECHEAP_API_KEY","NAMECHEAP_USER":"NAMECHEAP_USER","DOCKGE_URL":"dockge:5001","AUTHENTIK_URL":"authentik:9000","DDNSUPDATER_URL":"ddnsupdater:8000","OPENWEBUI_URL":"openwebui:3000"}'
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
      --hostname=ddnsupdater \
      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/ddnsupdater" \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
-     --package-env='{"CT_SETUP_CONFIG":{"settings":[{"provider":"namecheap","domain":"codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"apps.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"dockge.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"ddnsupdater.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"prompt.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"code.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"}]}}'
+     --package-env='{"CT_SETUP_CONFIG":{"settings":[{"provider":"namecheap","domain":"codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"apps.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"dockge.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"ddnsupdater.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"openwebui.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"},{"provider":"namecheap","domain":"code.codeonit.com","password":"efb5e9c74db84dfb8440b699b9496047"}]}}'
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
-     --hostname=prompt \
-     --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/prompt" \
+     --hostname=openwebui \
+     --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/openwebui" \
      --memory=16000
      --size=120 \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP"

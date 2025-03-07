@@ -9,9 +9,9 @@
 # domain name.
 
 (authenticate) {
-	reverse_proxy /outpost.goauthentik.io/* {$AUTHENTIK_URL}:9000
+	reverse_proxy /outpost.goauthentik.io/* {$AUTHENTIK_URL}
 
-	forward_auth {$AUTHENTIK_URL}:9000 {
+	forward_auth {$AUTHENTIK_URL} {
 		uri /outpost.goauthentik.io/auth/caddy
 		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
 		trusted_proxies private_ranges
@@ -31,6 +31,18 @@
 	handle @dockge {
 		import authenticate
 		reverse_proxy {$DOCKGE_URL}
+	}
+
+	@ddnsupdater host ddnsupdater.codeonit.com
+	handle @ddnsupdater {
+		import authenticate
+		reverse_proxy {$DDNSUPDATER_URL}
+	}
+
+	@openwebui host openwebui.codeonit.com
+	handle @openwebui {
+		import authenticate
+		reverse_proxy {$OPENWEBUI_URL}
 	}
 
 	@apps host apps.codeonit.com
