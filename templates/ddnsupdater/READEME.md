@@ -3,5 +3,5 @@
 #                     {"provider": "namecheap", "domain": "dockge.codeonit.com", "password": "password"}, \
 #                     {"provider": "namecheap", "domain": "ddnsupdater.codeonit.com", "password": "password"}, \
 #                     {"provider": "namecheap", "domain": "openwebui.codeonit.com", "password": "password"}, \
-#                     {"provider": "namecheap", "domain": "code.codeonit.com", "password": "password"} \
+#                     {"provider": "namecheap", "domain": "codeserver.codeonit.com", "password": "password"} \
 #                     ]}"

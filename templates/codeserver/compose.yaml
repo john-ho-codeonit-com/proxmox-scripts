@@ -11,7 +11,7 @@ services:
       - HASHED_PASSWORD= #optional
       - SUDO_PASSWORD=password #optional
       - SUDO_PASSWORD_HASH= #optional
-      - PROXY_DOMAIN=code.codeonit.com #optional
+      - PROXY_DOMAIN=codeserver.codeonit.com #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
       - config:/config

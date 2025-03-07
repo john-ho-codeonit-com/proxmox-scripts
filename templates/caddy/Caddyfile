@@ -44,6 +44,12 @@
 		reverse_proxy {$OPENWEBUI_URL}
 	}
 
+	@codeserver host codeserver.codeonit.com
+	handle @codeserver {
+		import authenticate
+		reverse_proxy {$CODESERVER_URL}
+	}
+
 	@apps host apps.codeonit.com
 	handle @apps {
 		reverse_proxy {$AUTHENTIK_URL}
