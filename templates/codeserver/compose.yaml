@@ -7,14 +7,14 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - PASSWORD=password #optional
+      - PASSWORD= #optional
       - HASHED_PASSWORD= #optional
-      - SUDO_PASSWORD=password #optional
+      - SUDO_PASSWORD= #optional
       - SUDO_PASSWORD_HASH= #optional
       - PROXY_DOMAIN=codeserver.codeonit.com #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
-      - config:/config
+      - ./config:/config
     ports:
       - 8443:8443
     restart: unless-stopped
