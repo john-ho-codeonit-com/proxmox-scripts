@@ -189,7 +189,7 @@ if [ "$package_url" ]; then
         curl "$package_url/.env" --output $docker_default_stack_path/tmp.env
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
         envsubst < $docker_default_stack_path/tmp.env > $docker_default_stack_path/.env
-        rm $docker_default_stack_path/tmp.env
+        # rm $docker_default_stack_path/tmp.env
     fi
     (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose up -d)
 fi
