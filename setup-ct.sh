@@ -186,9 +186,9 @@ if [ "$package_url" ]; then
     fi
     touch $docker_default_stack_path/.env
     if curl -sfILo/dev/null "$package_url/.env"; then
-        curl "$package_url/.env" --output /temp/.env
+        curl "$package_url/.env" --output $docker_default_stack_path/tmp.env
         eval "export $(printf "%s\n" "$package_env" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
-        envsubst < /temp/.env > $docker_default_stack_path/.env
+        envsubst < $docker_default_stack_path/tmp.env > $docker_default_stack_path/.env
     fi
     (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose --env-file .env up -d)
 fi
