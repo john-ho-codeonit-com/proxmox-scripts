@@ -34,3 +34,5 @@ services:
       # - SHOUTRRR_ADDRESSES=
     restart: always
     user: "0:0"
+    env_file:
+      - .env

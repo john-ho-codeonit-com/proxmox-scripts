@@ -11,5 +11,7 @@ services:
       - ./conf:/etc/example
       - ./data:/data
     expose:
-      - 80 # http
-      - 443 # https
+      - 80
+      - 443
+    env_file:
+      - .env
