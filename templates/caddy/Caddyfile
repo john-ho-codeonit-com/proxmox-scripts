@@ -41,7 +41,6 @@
 
 	@openwebui host openwebui.codeonit.com
 	handle @openwebui {
-		import authenticate
 		reverse_proxy {$OPENWEBUI_URL}
 	}
 
