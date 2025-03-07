@@ -21,7 +21,7 @@ curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/r
      --size=16 \
      --memory=4096 \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
-     --package-env='{"NAMECHEAP_API_KEY":"a2c3898476b5483cb9ffb1c8308fe2c8","NAMECHEAP_USER":"johnphho","DOCKGE_URL":"dockge:5001","AUTHENTIK_URL":"authentik:9000"}'
+     --package-env='{"NAMECHEAP_API_KEY":"NAMECHEAP_API_KEY","NAMECHEAP_USER":"NAMECHEAP_USER","DOCKGE_URL":"dockge:5001","AUTHENTIK_URL":"authentik:9000"}'
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
@@ -29,11 +29,11 @@ curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/r
      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/ddnsupdater" \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
      --package-env='{"settings": [\
-                    {"provider": "namecheap", "domain": "apps.codeonit.com", "password": "password"}, \
-                    {"provider": "namecheap", "domain": "dockge.codeonit.com", "password": "password"}, \
-                    {"provider": "namecheap", "domain": "ddnsupdater.codeonit.com", "password": "password"}, \
-                    {"provider": "namecheap", "domain": "prompt.codeonit.com", "password": "password"}, \
-                    {"provider": "namecheap", "domain": "code.codeonit.com", "password": "password"}, \
+                    {"PROVIDER": "namecheap", "DOMAIN": "apps.codeonit.com", "PASSWORD": "password"}, \
+                    {"PROVIDER": "namecheap", "DOMAIN": "dockge.codeonit.com", "PASSWORD": "password"}, \
+                    {"PROVIDER": "namecheap", "DOMAIN": "ddnsupdater.codeonit.com", "PASSWORD": "password"}, \
+                    {"PROVIDER": "namecheap", "DOMAIN": "prompt.codeonit.com", "PASSWORD": "password"}, \
+                    {"PROVIDER": "namecheap", "DOMAIN": "code.codeonit.com", "PASSWORD": "password"}, \
                     ]}'
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
