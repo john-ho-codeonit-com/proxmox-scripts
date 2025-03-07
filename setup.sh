@@ -25,16 +25,16 @@ curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/r
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
-     --hostname=caddy \
+     --hostname=ddnsupdater \
      --package-url="https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/templates/ddnsupdater" \
      --ssh-public-key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACmYd5vnc3vUyt5gpj/jKe4MMCnCCrzIqAscv0xO0lG john@Johns-MBP" \
-     --package-env='{"settings": [\
-                    {"PROVIDER": "namecheap", "DOMAIN": "apps.codeonit.com", "PASSWORD": "password"}, \
-                    {"PROVIDER": "namecheap", "DOMAIN": "dockge.codeonit.com", "PASSWORD": "password"}, \
-                    {"PROVIDER": "namecheap", "DOMAIN": "ddnsupdater.codeonit.com", "PASSWORD": "password"}, \
-                    {"PROVIDER": "namecheap", "DOMAIN": "prompt.codeonit.com", "PASSWORD": "password"}, \
-                    {"PROVIDER": "namecheap", "DOMAIN": "code.codeonit.com", "PASSWORD": "password"}, \
-                    ]}'
+     --package-env='{"CT_SETUP_CONFIG":{"settings":[ \
+                    {"provider":"namecheap","domain":"apps.codeonit.com", "password": "efb5e9c74db84dfb8440b699b9496047"}, \
+                    {"provider":"namecheap","domain":"dockge.codeonit.com", "password": "efb5e9c74db84dfb8440b699b9496047"}, \
+                    {"provider":"namecheap","domain":"ddnsupdater.codeonit.com", "password": "efb5e9c74db84dfb8440b699b9496047"}, \
+                    {"provider":"namecheap","domain":"prompt.codeonit.com", "password": "efb5e9c74db84dfb8440b699b9496047"}, \
+                    {"provider":"namecheap","domain":"code.codeonit.com", "password": "efb5e9c74db84dfb8440b699b9496047"} \
+                    ]}}'
 
 curl -s https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/create-ct.sh \
      | bash -s -- \
