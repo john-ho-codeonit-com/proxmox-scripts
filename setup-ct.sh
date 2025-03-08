@@ -191,7 +191,9 @@ if [ "$package_url" ]; then
         envsubst < $docker_default_stack_path/tmp.env > $docker_default_stack_path/.env
         rm $docker_default_stack_path/tmp.env
     fi
-    (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose up -d)
+    if curl -sfILo/dev/null "$package_url/compose.yaml"; then
+        (cd $docker_default_stack_path && curl "$package_url/compose.yaml" --output compose.yaml && docker compose up -d)
+    fi
 fi
 
 if curl -sfILo/dev/null "$package_url/setup.sh"; then
