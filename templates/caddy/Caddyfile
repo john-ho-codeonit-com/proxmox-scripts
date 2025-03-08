@@ -19,7 +19,6 @@
 }
 
 *.codeonit.com {
-
 	tls {
 		dns namecheap {
 			api_key {$NAMECHEAP_API_KEY}
