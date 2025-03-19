@@ -220,6 +220,8 @@ fi
 
 template="$isos_volume:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
 
+startup="order=$startorder"
+
 echo "Creating container..."
 pct create $vmid $template \
   --hostname $hostname \
@@ -236,7 +238,7 @@ pct create $vmid $template \
   --storage $storage \
   --unprivileged $unprivileged \
   --ssh-public-keys $ssh_public_keys \
-  --startorder $startorder \
+  --startup $startup \
   --start 1
 
 until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be created..."; sleep 1; done
