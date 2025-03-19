@@ -1,26 +1,4 @@
 services:
-  ollama:
-    restart: always
-    user: "0:0"
-    image: ollama/ollama:rocm
-    container_name: ollama
-    environment:
-      OLLAMA_MODELS: /usr/share/ollama
-    devices:
-      - /dev/kfd
-      - /dev/dri
-    security_opt:
-      - seccomp:unconfined
-    cap_add:
-      - SYS_PTRACE
-    ipc: host
-    group_add:
-      - video
-    volumes:
-      - /home/username/.ollama:/root/.ollama
-      - /home/username/ollama/models:/usr/share/ollama
-    ports:
-      - 11434:11434
   open-webui:
     restart: always
     user: "0:0"
