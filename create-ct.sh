@@ -25,6 +25,7 @@ ssh_public_key=
 unprivileged=1
 CT_SETUP_GPU_PASSTHROUGH_ENABLED=0
 mac=
+startorder=1
 
 # non-configurable
 ostype="debian"
@@ -58,6 +59,7 @@ SYNOPSIS
                      [--password=<arg>]
                      [--package-url=<arg>]
                      [--package-env=<arg>]
+                     [--startorder=<arg>]
 
 OPTIONS
   -h, --help
@@ -101,6 +103,9 @@ OPTIONS
 
   --package-env=<arg>
         package env as a json string to setup ct
+
+  --startorder=<arg>
+        start order for container, will be $startorder if not set
   
 EOF
 }
@@ -162,6 +167,8 @@ while getopts "$optspec" optchar; do
                     package_url="$OPTARG" ;;
                 package-env|package-env=*) next_arg
                     package_env="$OPTARG" ;;
+                startorder|startorder=*) next_arg
+                    startorder="$OPTARG" ;;
                 -) break ;;
                 *) fatal "Unknown option '--${OPTARG}'" "see '${0} --help' for usage" ;;
             esac
@@ -229,6 +236,7 @@ pct create $vmid $template \
   --storage $storage \
   --unprivileged $unprivileged \
   --ssh-public-keys $ssh_public_keys \
+  --startorder $startorder \
   --start 1
 
 until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be created..."; sleep 1; done
