@@ -61,6 +61,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    env_file:
+      - .env
 
   n8n-import:
     <<: *service-n8n
