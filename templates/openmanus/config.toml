@@ -1,0 +1,11 @@
+[llm]
+model = "qwen2.5-coder:14b-instruct-q5_K_S"
+base_url = "http://192.168.50.128:11434/v1/"
+api_key = "ollama"
+max_tokens = 4096
+temperature = 0.6
+
+[llm.vision]
+model = "qwen2.5-coder:14b-instruct-q5_K_S"
+base_url = "http:///192.168.50.128:11434/v1/"
+api_key = "ollama"
