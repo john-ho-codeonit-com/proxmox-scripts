@@ -5,7 +5,7 @@ services:
     image: ghcr.io/open-webui/open-webui:cuda
     container_name: open-webui
     environment:
-      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_BASE_URL: $OLLAMA_BASE_URL
       HSA_OVERRIDE_GFX_VERSION: 11.0.0
       HIP_VISIBLE_DEVICES: "0"
     devices:
