@@ -38,9 +38,24 @@
 		reverse_proxy {$DDNSUPDATER_URL}
 	}
 
+	@litellm host litellm.codeonit.com
+	handle @litellm {
+		reverse_proxy {$LITELLM_URL}
+	}
+
+	@ollama host ollama.codeonit.com
+	handle @ollama {
+		reverse_proxy {$OLLAMA_URL}
+	}
+
 	@openwebui host openwebui.codeonit.com
 	handle @openwebui {
 		reverse_proxy {$OPENWEBUI_URL}
+	}
+
+	@openmanus host openmanus.codeonit.com
+	handle @openmanus {
+		reverse_proxy {$OPENMANUS_URL}
 	}
 
 	@codeserver host codeserver.codeonit.com
