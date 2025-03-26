@@ -26,7 +26,7 @@ docker_default_stack_path="$docker_stacks_path/default"
 usage() {
   cat - >&2 <<EOF
 NAME
-    ${CMD:=${0##*/}} - Checks local environment to run the app
+    ${CMD:=${0##*/}} - Setup Proxmox container
  
 SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
@@ -43,10 +43,10 @@ OPTIONS
   --user=<arg>
         container user to created
 
-  --user_fullname=<arg>
+  --user-fullname=<arg>
         user full name for the container user
 
-  --user_password=<arg>
+  --user-password=<arg>
         user password for the container user
 
   --package-url=<arg>

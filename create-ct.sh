@@ -44,18 +44,18 @@ setup_ct_script_url="https://raw.githubusercontent.com/john-ho-codeonit-com/prox
 usage() {
   cat - >&2 <<EOF
 NAME
-    ${CMD:=${0##*/}} - Create a container
+    ${CMD:=${0##*/}} - Create Proxmox container
  
 SYNOPSIS
     ${CMD:=${0##*/}} [-h|--help]
                      --hostname=<arg>
-                     --ssh-public-key
+                     --ssh-public-key=<arg>
                      [--description=<arg>]
                      [--vmid=<arg>]
                      [--memory=<arg>]
                      [--size=<arg>]
-                     [--mac=<mac>]
-                     [--unprivileged]
+                     [--mac=<arg>]
+                     [--unprivileged=<arg>]
                      [--password=<arg>]
                      [--package-url=<arg>]
                      [--package-env=<arg>]
