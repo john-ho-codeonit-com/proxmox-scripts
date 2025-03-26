@@ -132,7 +132,7 @@ echo "$ssh_public_key" | sshpass -p $root_password ssh root@$hostname -oStrictHo
 sshpass -p $user_password ssh root@$hostname "cat /root/.ssh/authorized_keys"
 
 echo "Running Post PVE Install script..."
-ssh -t root@x79pve 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"'
+ssh -t root@$hostname 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"'
 sleep 20
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for reboot to complete..."; sleep 1; done
 
