@@ -14,7 +14,7 @@ ssh_public_key=
 user=
 
 # defaults
-root_password="qwerty#123"
+root_password="Kazsuma1"
 user_password="qwerty#123"
 gpu_passthrough_enabled=0
 
@@ -126,33 +126,35 @@ if [ -z "$user" ]; then
      fatal "user is required"
 fi
 
-echo "Setting up ssh key"
-ssh-keygen -f ~/.ssh/known_hosts -R $hostname
-echo "$ssh_public_key" | sshpass -p $root_password ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
-sshpass -p $user_password ssh root@$hostname "cat /root/.ssh/authorized_keys"
+# echo "Setting up ssh key"
+# ssh-keygen -f ~/.ssh/known_hosts -R $hostname
+# echo "$ssh_public_key" | sshpass -p $root_password ssh root@$hostname -oStrictHostKeyChecking=accept-new 'cat >> /root/.ssh/authorized_keys'
+# sshpass -p $user_password ssh root@$hostname "cat /root/.ssh/authorized_keys"
 
-echo "Running Post PVE Install script..."
-ssh -t root@$hostname 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"'
-sleep 20
-until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for reboot to complete..."; sleep 1; done
+# echo "Running Post PVE Install script..."
+# ssh -t root@$hostname 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"'
+# sleep 20
+# until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting for reboot to complete..."; sleep 1; done
 
-echo  "Installing PVE LXC IP-Tag..."
-ssh -t root@$hostname 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/add-lxc-iptag.sh)"'
+# echo  "Installing PVE LXC IP-Tag..."
+# ssh -t root@$hostname 'bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/add-lxc-iptag.sh)"'
 
-echo  "Installing Ultimate Updater for PVE..."
-ssh -t root@$hostname 'bash -c "$(wget -qLO - https://raw.githubusercontent.com/BassT23/Proxmox/master/install.sh)"'
+# echo  "Installing Ultimate Updater for PVE..."
+# ssh -t root@$hostname 'bash -c "$(wget -qLO - https://raw.githubusercontent.com/BassT23/Proxmox/master/install.sh)"'
 
-echo "Running Post Setup PVE script..."
-curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/post-setup-pve.sh" \
-     | ssh root@$hostname bash -s
+# echo "Running Post Setup PVE script..."
+# post_setup_pve_args="--hostname=$hostname --user=$user"
+
+# curl -s "https://raw.githubusercontent.com/john-ho-codeonit-com/proxmox-scripts/refs/heads/main/post-setup-pve.sh" \
+#      | ssh root@$hostname bash -s -- $post_setup_pve_args
 
 if [ $gpu_passthrough_enabled -eq 1 ]; then
      echo "Setting up GPU passthrough..."
-     cat > /etc/udev/rules.d/99-gpu-chmod666.rules << 'EOF'
-KERNEL=="renderD128", MODE="0666"
-KERNEL=="kfd", MODE="0666"
-KERNEL=="kfd", GROUP="render", MODE="0666" 
-KERNEL=="card0", MODE="0666"
+cat > /etc/udev/rules.d/99-gpu-chmod666.rules << 'EOF'
+     KERNEL=="renderD128", MODE="0666"
+     KERNEL=="kfd", MODE="0666"
+     KERNEL=="kfd", GROUP="render", MODE="0666" 
+     KERNEL=="card0", MODE="0666"
 EOF
      udevadm control --reload-rules && udevadm trigger
 fi

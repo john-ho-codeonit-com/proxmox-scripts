@@ -10,7 +10,6 @@
 
 # required
 hostname=
-ssh_public_key=
 user=
 
 # defaults
