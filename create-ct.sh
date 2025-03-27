@@ -244,7 +244,7 @@ pct create $vmid $template \
 until [ -f "/etc/pve/lxc/$vmid.conf" ]; do echo "waiting for container to be created..."; sleep 1; done
 until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting for container to start..."; sleep 1; done
 
-default_gateway=route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " "
+default_gateway=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 ip_address=$(dig +short @$default_gateway dockge1 | head -n1)
 host_entry="$ip_address $hostname"
 grep -qxF $host_entry /etc/hosts || echo $host_entry | sudo tee -a /etc/hosts
