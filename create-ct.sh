@@ -247,8 +247,7 @@ until [ $(pct status $vmid | awk '{print $2}') == "running" ]; do echo "waiting 
 default_gateway=$(route -n|grep "UG"|grep -v "UGH"|cut -f 10 -d " ")
 ip_address=$(dig +short @$default_gateway dockge1 | head -n1)
 host_entry="$ip_address $hostname"
-grep -qxF $host_entry /etc/hosts || echo $host_entry | sudo tee -a /etc/hosts
-
+grep -qxF "$host_entry" /etc/hosts || echo $host_entry | sudo tee -a /etc/hosts
 until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting to connect to container..."; sleep 1; done
 
 pct set $vmid -onboot 1
