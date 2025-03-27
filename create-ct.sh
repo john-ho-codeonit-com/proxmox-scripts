@@ -214,7 +214,7 @@ if [ -z "$description" ]; then
     description=$hostname
 fi
 
-if [ -z "$mac" ]; then
+if [ -n "$mac" ]; then
     net0+=",hwaddr=$mac"
 fi
 
