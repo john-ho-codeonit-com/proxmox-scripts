@@ -249,7 +249,7 @@ ip_address=$(dig +short @$default_gateway dockge1 | head -n1)
 host_entry="$ip_address $hostname"
 grep -qxF $host_entry /etc/hosts || echo $host_entry | sudo tee -a /etc/hosts
 
-until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do ssh-keyscan $hostname; echo "waiting to connect to container..."; sleep 1; done
+until [ $(ssh-keyscan $hostname >/dev/null 2>&1)$? -eq 0 ]; do echo "waiting to connect to container..."; sleep 1; done
 
 pct set $vmid -onboot 1
 
